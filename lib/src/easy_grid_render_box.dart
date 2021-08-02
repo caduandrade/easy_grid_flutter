@@ -35,7 +35,7 @@ class EasyGridRenderBox extends RenderBox
 
     layout.iterate((row, column, child) {
       final EasyGridParentData parentData = child.easyGridParentData();
-      EasyGridConfiguration configuration = parentData.configuration!;
+      ChildConfiguration configuration = parentData.configuration!;
       if (parentData.hasSize == false) {
         BoxConstraints c = BoxConstraints.loose(Size.infinite);
         //  c= BoxConstraints.loose(Size(500,500));
@@ -51,20 +51,19 @@ class EasyGridRenderBox extends RenderBox
     layout.updateColumnXs();
     layout.updateRowYs();
 
-    double x = 0;
-    double y = 0;
-
+    // updating the offset...
     layout.forEachChild((child) {
       final EasyGridParentData parentData = child.easyGridParentData();
-      EasyGridConfiguration configuration = parentData.configuration!;
+      ChildConfiguration configuration = parentData.configuration!;
 
       //TODO handle spans
-      x = layout.columnX(column: parentData.initialColumn!)!;
-      y = layout.rowY(row: parentData.initialRow!)!;
+     double x = layout.columnX(column: parentData.initialColumn!)!;
+      double y = layout.rowY(row: parentData.initialRow!)!;
 
       parentData.offset = Offset(x, y);
     });
 
+    // updating the size...
     double width = 0;
     if (this.horizontalBehavior == AxisBehavior.fitted) {
       width = constraints.maxWidth;
@@ -76,7 +75,6 @@ class EasyGridRenderBox extends RenderBox
         width = math.min(constraints.maxWidth, width);
       }
     }
-
     double height = 0;
     if (this.verticalBehavior == AxisBehavior.fitted) {
       height = constraints.maxHeight;
@@ -88,7 +86,6 @@ class EasyGridRenderBox extends RenderBox
         height = math.min(constraints.maxHeight, height);
       }
     }
-
     size = Size(width, height);
 
     DateTime e = DateTime.now();
@@ -108,7 +105,7 @@ class EasyGridRenderBox extends RenderBox
       }
 
       parentData.clear();
-      EasyGridConfiguration configuration = parentData.configuration!;
+      ChildConfiguration configuration = parentData.configuration!;
 
       if (configuration.row != null && configuration.column != null) {
         layout.addChild(

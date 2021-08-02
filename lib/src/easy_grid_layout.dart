@@ -117,7 +117,7 @@ class EasyGridLayout {
       throw StateError('Null constraints');
     }
 
-    EasyGridConfiguration configuration = parentData.configuration!;
+    ChildConfiguration configuration = parentData.configuration!;
 
     for (int r = row; r < row + configuration.spanX; r++) {
       for (int c = column; c < column + configuration.spanY; c++) {

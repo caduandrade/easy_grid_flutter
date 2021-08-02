@@ -81,7 +81,7 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
     //TODO error column without row
     return GridChild._(
         child: child,
-        configuration: EasyGridConfiguration(
+        configuration: ChildConfiguration(
             row: row,
             column: column,
             spanX: spanX,
@@ -98,7 +98,7 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
     required Widget child,
   }) : super(child: child);
 
-  final EasyGridConfiguration configuration;
+  final ChildConfiguration configuration;
 
   @override
   void applyParentData(RenderObject renderObject) {

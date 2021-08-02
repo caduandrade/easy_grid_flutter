@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-class EasyGridConfiguration {
-  EasyGridConfiguration(
+class ChildConfiguration {
+  ChildConfiguration(
       {this.row,
       this.column,
       required this.spanX,
@@ -21,4 +21,7 @@ class EasyGridConfiguration {
   final bool growY;
   final int skip;
   final Alignment alignment;
+
+  //TODO avoid negative values
+
 }
