@@ -3,4 +3,18 @@ import 'package:flutter/rendering.dart';
 
 class EasyGridParentData extends ContainerBoxParentData<RenderBox> {
   EasyGridConfiguration? configuration;
+
+   int? initialRow;
+   int? finalRow;
+   int? initialColumn;
+   int? finalColumn;
+   bool hasSize = false;
+
+   void clear(){
+     initialRow=null;
+     finalRow=null;
+     initialColumn=null;
+     finalColumn=null;
+     hasSize=false;
+   }
 }

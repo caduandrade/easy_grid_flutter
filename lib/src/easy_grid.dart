@@ -1,3 +1,4 @@
+import 'package:easy_grid/src/axis_alignment.dart';
 import 'package:easy_grid/src/axis_behavior.dart';
 import 'package:easy_grid/src/configurations.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
@@ -9,25 +10,61 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class EasyGrid extends MultiChildRenderObjectWidget {
-  EasyGrid({required List<EasyGridChild> children, this.horizontalBehavior=AxisBehavior.constrained,this.verticalBehavior=AxisBehavior.constrained}) : super(children: children);
+  EasyGrid._(
+      {required List<GridChild> children,
+      required this.horizontalBehavior,
+      required this.verticalBehavior,
+      required this.columns,
+      required this.rows})
+      : super(children: children);
+
+  factory EasyGrid(
+      {required List<GridChild> children,
+      AxisBehavior horizontalBehavior = AxisBehavior.constrained,
+      AxisBehavior verticalBehavior = AxisBehavior.constrained,
+      List<GridColumn>? columns,
+      List<GridRow>? rows}) {
+
+
+    return EasyGrid._(
+        children: children,
+        horizontalBehavior: horizontalBehavior,
+        verticalBehavior: verticalBehavior,
+        columns: columns != null ? columns : [],
+        rows: rows != null ? rows : []);
+  }
 
   final AxisBehavior horizontalBehavior;
   final AxisBehavior verticalBehavior;
+  final List<GridColumn> columns;
+  final List<GridRow> rows;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return EasyGridRenderBox(horizontalBehavior: horizontalBehavior, verticalBehavior: verticalBehavior);
+    return EasyGridRenderBox(
+        horizontalBehavior: horizontalBehavior,
+        verticalBehavior: verticalBehavior);
   }
-
 }
-
 
 class _EasyGridElement extends MultiChildRenderObjectElement {
   _EasyGridElement(EasyGrid widget) : super(widget);
 }
 
-class EasyGridChild extends ParentDataWidget<EasyGridParentData> {
-  factory EasyGridChild(
+class GridColumn {
+  const GridColumn({required this.alignment});
+
+  final AxisAlignment alignment;
+}
+
+class GridRow {
+  const GridRow({required this.alignment});
+
+  final AxisAlignment alignment;
+}
+
+class GridChild extends ParentDataWidget<EasyGridParentData> {
+  factory GridChild(
       {required Widget child,
       int? row,
       int? column,
@@ -38,7 +75,11 @@ class EasyGridChild extends ParentDataWidget<EasyGridParentData> {
       bool growY = false,
       int skip = 0,
       Alignment alignment = Alignment.center}) {
-    return EasyGridChild._(
+    //TODO error wrap and row and column
+    //TODO error skip and row and column
+    //TODO error row without column
+    //TODO error column without row
+    return GridChild._(
         child: child,
         configuration: EasyGridConfiguration(
             row: row,
@@ -52,7 +93,7 @@ class EasyGridChild extends ParentDataWidget<EasyGridParentData> {
             alignment: alignment));
   }
 
-  EasyGridChild._({
+  GridChild._({
     required this.configuration,
     required Widget child,
   }) : super(child: child);
