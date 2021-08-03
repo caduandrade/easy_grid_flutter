@@ -3,6 +3,8 @@ import 'package:easy_grid/src/axis_behavior.dart';
 import 'package:easy_grid/src/configurations.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/easy_grid_render_box.dart';
+import 'package:easy_grid/src/grid_column.dart';
+import 'package:easy_grid/src/grid_row.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,42 +27,33 @@ class EasyGrid extends MultiChildRenderObjectWidget {
       List<GridColumn>? columns,
       List<GridRow>? rows}) {
 
+    //TODO remove factor?
 
     return EasyGrid._(
         children: children,
         horizontalBehavior: horizontalBehavior,
         verticalBehavior: verticalBehavior,
-        columns: columns != null ? columns : [],
-        rows: rows != null ? rows : []);
+        columns: columns,
+        rows: rows);
   }
 
   final AxisBehavior horizontalBehavior;
   final AxisBehavior verticalBehavior;
-  final List<GridColumn> columns;
-  final List<GridRow> rows;
+  final List<GridColumn>? columns;
+  final List<GridRow>? rows;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return EasyGridRenderBox(
         horizontalBehavior: horizontalBehavior,
-        verticalBehavior: verticalBehavior);
+        verticalBehavior: verticalBehavior,
+    columns: columns,
+    rows: rows);
   }
 }
 
 class _EasyGridElement extends MultiChildRenderObjectElement {
   _EasyGridElement(EasyGrid widget) : super(widget);
-}
-
-class GridColumn {
-  const GridColumn({required this.alignment});
-
-  final AxisAlignment alignment;
-}
-
-class GridRow {
-  const GridRow({required this.alignment});
-
-  final AxisAlignment alignment;
 }
 
 class GridChild extends ParentDataWidget<EasyGridParentData> {

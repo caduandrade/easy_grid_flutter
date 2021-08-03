@@ -5,6 +5,8 @@ import 'package:easy_grid/src/axis_behavior.dart';
 import 'package:easy_grid/src/configurations.dart';
 import 'package:easy_grid/src/easy_grid_layout.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
+import 'package:easy_grid/src/grid_column.dart';
+import 'package:easy_grid/src/grid_row.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -14,10 +16,13 @@ class EasyGridRenderBox extends RenderBox
         ContainerRenderObjectMixin<RenderBox, EasyGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, EasyGridParentData> {
   EasyGridRenderBox(
-      {required this.horizontalBehavior, required this.verticalBehavior});
+      {required this.horizontalBehavior, required this.verticalBehavior,
+      this.columns, this.rows});
 
   final AxisBehavior horizontalBehavior;
   final AxisBehavior verticalBehavior;
+  final List<GridColumn>? columns;
+  final List<GridRow>? rows;
 
   @override
   void setupParentData(covariant RenderObject child) {
@@ -31,7 +36,18 @@ class EasyGridRenderBox extends RenderBox
 
     final BoxConstraints constraints = this.constraints;
 
-    EasyGridLayout layout = _buildLayout();
+    List<RenderBox> children = [];
+    RenderBox? child = firstChild;
+    while (child != null) {
+      final EasyGridParentData parentData = child.easyGridParentData();
+      if (parentData.configuration == null) {
+        throw StateError('Null constraints');
+      }
+      parentData.clear();
+      children.add(child);
+      child = parentData.nextSibling;
+    }
+    EasyGridLayout layout = EasyGridLayout.build(children, this.columns,this.rows);
 
     layout.iterate((row, column, child) {
       final EasyGridParentData parentData = child.easyGridParentData();
@@ -48,8 +64,8 @@ class EasyGridRenderBox extends RenderBox
       layout.updateMaxHeight(row: row, height: child.size.height);
     });
 
-    layout.updateColumnXs();
-    layout.updateRowYs();
+    layout.updateColumnsX();
+    layout.updateRowsY();
 
     // updating the offset...
     layout.forEachChild((child) {
@@ -68,9 +84,7 @@ class EasyGridRenderBox extends RenderBox
     if (this.horizontalBehavior == AxisBehavior.fitted) {
       width = constraints.maxWidth;
     } else {
-      layout.forEachWidth((value) {
-        width += value;
-      });
+      width=layout.totalWidth();
       if (this.horizontalBehavior == AxisBehavior.constrained) {
         width = math.min(constraints.maxWidth, width);
       }
@@ -79,9 +93,7 @@ class EasyGridRenderBox extends RenderBox
     if (this.verticalBehavior == AxisBehavior.fitted) {
       height = constraints.maxHeight;
     } else {
-      layout.forEachHeight((value) {
-        height += value;
-      });
+      height=layout.totalHeight();
       if (this.verticalBehavior == AxisBehavior.constrained) {
         height = math.min(constraints.maxHeight, height);
       }
@@ -92,39 +104,6 @@ class EasyGridRenderBox extends RenderBox
     print('time: ' + e.difference(start).inMilliseconds.toString());
   }
 
-  EasyGridLayout _buildLayout() {
-    EasyGridLayout layout = EasyGridLayout();
-
-    int column = 0;
-    int row = 0;
-    RenderBox? child = firstChild;
-    while (child != null) {
-      final EasyGridParentData parentData = child.easyGridParentData();
-      if (parentData.configuration == null) {
-        throw StateError('Null constraints');
-      }
-
-      parentData.clear();
-      ChildConfiguration configuration = parentData.configuration!;
-
-      if (configuration.row != null && configuration.column != null) {
-        layout.addChild(
-            child: child,
-            row: configuration.row!,
-            column: configuration.column!);
-      } else {
-        layout.addChild(child: child, row: row, column: column);
-        if (configuration.wrap) {
-          row++;
-          column = 0;
-        } else {
-          column++;
-        }
-      }
-      child = parentData.nextSibling;
-    }
-    return layout;
-  }
 
   @override
   void paint(PaintingContext context, Offset offset) {

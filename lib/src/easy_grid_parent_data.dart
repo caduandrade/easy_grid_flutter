@@ -17,4 +17,5 @@ class EasyGridParentData extends ContainerBoxParentData<RenderBox> {
      finalColumn=null;
      hasSize=false;
    }
+
 }

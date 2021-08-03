@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_grid/easy_grid.dart';
 import 'package:easy_grid/src/configurations.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,56 +17,57 @@ extension _EasyGridParentDataGetter on RenderObject {
 typedef LayoutIterator = Function(int row, int column, RenderBox child);
 
 class EasyGridLayout {
-  Map<_ChildKey, RenderBox> _children = Map<_ChildKey, RenderBox>();
-
-  Map<int, double> _columnX = Map<int, double>();
-  Map<int, double> _rowY = Map<int, double>();
-
-  Map<int, double> _maxWidth = Map<int, double>();
-  Map<int, double> _maxHeight = Map<int, double>();
-
-  int _maxRow = 0;
-  int _maxColumn = 0;
-
-  int get maxRow => _maxRow;
-  int get maxColumn => _maxColumn;
-
-  void forEachWidth(Function(double value) f){
-    _maxWidth.values.forEach(f);
+  
+  static EasyGridLayout build(List<RenderBox> children, List<GridColumn>? widgetColumns, List<GridRow>? widgetRows){
+    _LayoutBuilder builder = _LayoutBuilder();
+    return builder.build(children, widgetColumns, widgetRows);
   }
 
-  void forEachHeight(Function(double value) f){
-    _maxHeight.values.forEach(f);
+  EasyGridLayout._(Map<_ChildKey, RenderBox> children,List<_Row> rows,List<_Column> columns): this._children=children,this._rows=rows,this._columns=columns;
+  
+  Map<_ChildKey, RenderBox> _children;
+
+  List<_Row> _rows;
+  List<_Column> _columns;  
+  
+  double totalWidth(){
+    double total =0;
+    _columns.forEach((element) { 
+      total+=element.width;
+    });
+    return total;
+  }
+
+  double totalHeight(){
+    double total =0;
+    _rows.forEach((element) {
+      total+=element.height;
+    });
+    return total;
   }
 
   double? columnX({required int column}){
-    return _columnX[column];
+    return _columns[column].x;
   }
 
   double? rowY({required int row}){
-    return _rowY[row];
+    return _rows[row].y;
   }
 
-  void updateColumnXs() {
+  void updateColumnsX() {
     double x = 0;
-    for (int column = 0; column <= _maxColumn; column++) {
-      double? v = width(column: column);
-      if (v != null) {
-        _columnX[column] = x;
-        x += v;
-      }
-    }
+    _columns.forEach((element) { 
+      element.x = x;
+      x+=element.width;
+    });
   }
 
-  void updateRowYs() {
+  void updateRowsY() {
     double y = 0;
-    for (int row = 0; row <= _maxRow; row++) {
-      double? v = height(row: row);
-      if (v != null) {
-        _rowY[row] = y;
-        y += v;
-      }
-    }
+    _rows.forEach((element) { 
+      element.y=y;
+      y+=element.height;
+    });
   }
 
   void forEachChild(Function(RenderBox child) f) {
@@ -73,8 +75,8 @@ class EasyGridLayout {
   }
 
   void iterate(LayoutIterator iterator) {
-    for (int row = 0; row <= _maxRow; row++) {
-      for (int column = 0; column <= _maxColumn; column++) {
+    for (int row = 0; row < _rows.length; row++) {
+      for (int column = 0; column < _columns.length; column++) {
         _ChildKey key = _ChildKey(row: row, column: column);
         RenderBox? child = _children[key];
         if (child != null) {
@@ -85,32 +87,119 @@ class EasyGridLayout {
   }
 
   double? width({required int column}) {
-    return _maxWidth[column];
+    return _columns[column].width;
   }
 
   double? height({required int row}) {
-    return _maxHeight[row];
+    return _rows[row].height;
   }
 
   void updateMaxHeight({required int row, required double height}) {
-    if (_maxHeight.containsKey(row)) {
-      double max = math.max(_maxHeight[row]!, height);
-      _maxHeight[row] = max;
-    } else {
-      _maxHeight[row] = height;
-    }
+    _rows[row].height = math.max(_rows[row].height, height);
   }
 
   void updateMaxWidth({required int column, required double width}) {
-    if (_maxWidth.containsKey(column)) {
-      double max = math.max(_maxWidth[column]!, width);
-      _maxWidth[column] = max;
-    } else {
-      _maxWidth[column] = width;
-    }
+    _columns[column].width = math.max(_columns[column].width, width);
   }
 
-  void addChild(
+  RenderBox? getChild({required int row, required int column}) {
+    _ChildKey key = _ChildKey(row: row, column: column);
+    return _children[key];
+  }
+}
+
+class _ChildKey {
+  const _ChildKey({required this.row, required this.column});
+
+  final int row;
+  final int column;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ChildKey &&
+          runtimeType == other.runtimeType &&
+          row == other.row &&
+          column == other.column;
+
+  @override
+  int get hashCode => row.hashCode ^ column.hashCode;
+}
+
+class _Row  {
+
+  _Row({ this.alignment=AxisAlignment.center});
+
+  final AxisAlignment alignment;
+
+  double height =0;
+  double y =0;
+}
+
+class _Column  {
+
+  _Column({ this.alignment=AxisAlignment.center});
+
+  final AxisAlignment alignment;
+  
+  double width =0;
+  double x =0;
+  
+}
+
+
+class _LayoutBuilder {
+
+    EasyGridLayout build(List<RenderBox> children, List<GridColumn>? widgetColumns, List<GridRow>? widgetRows) {
+    int column = 0;
+    int row = 0;
+    children.forEach((child) {
+      final EasyGridParentData parentData = child.easyGridParentData();
+      ChildConfiguration configuration = parentData.configuration!;
+      if (configuration.row != null && configuration.column != null) {
+        _addChild(
+            child: child,
+            row: configuration.row!,
+            column: configuration.column!);
+      } else {
+        _addChild(child: child, row: row, column: column);
+        if (configuration.wrap) {
+          row++;
+          column = 0;
+        } else {
+          column++;
+        }
+      }
+    });
+
+    List<_Row> _rows = [];
+    if(widgetRows!=null){
+      widgetRows.forEach((row) {
+        _rows.add(_Row(alignment: row.alignment));
+      });
+    }
+    for(int row =_rows.length; row<=_maxRow ;row++) {
+      _rows.add(_Row());
+    }
+
+    List<_Column> _columns =[];
+    if(widgetColumns!=null){
+      widgetColumns.forEach((column) {
+        _columns.add(_Column(alignment: column.alignment));
+      });
+    }
+    for(int column =_columns.length; column<=_maxColumn ;column++) {
+      _columns.add(_Column());
+    }
+
+    return EasyGridLayout._(_children, _rows, _columns);
+  }
+
+  Map<_ChildKey, RenderBox> _children = Map<_ChildKey, RenderBox>();
+  int _maxRow = 0;
+  int _maxColumn = 0;
+
+  void _addChild(
       {required RenderBox child, required int row, required int column}) {
     final EasyGridParentData parentData = child.easyGridParentData();
     if (parentData.configuration == null) {
@@ -137,26 +226,5 @@ class EasyGridLayout {
     parentData.finalColumn = column + configuration.spanY - 1;
   }
 
-  RenderBox? getChild({required int row, required int column}) {
-    _ChildKey key = _ChildKey(row: row, column: column);
-    return _children[key];
-  }
-}
 
-class _ChildKey {
-  const _ChildKey({required this.row, required this.column});
-
-  final int row;
-  final int column;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _ChildKey &&
-          runtimeType == other.runtimeType &&
-          row == other.row &&
-          column == other.column;
-
-  @override
-  int get hashCode => row.hashCode ^ column.hashCode;
 }
