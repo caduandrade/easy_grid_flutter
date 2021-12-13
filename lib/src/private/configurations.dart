@@ -17,6 +17,14 @@ class ChildConfiguration {
     if (this.column != null && this.row == null) {
       throw ArgumentError('When the column is defined, the row must also be.');
     }
+    if (this.column != null && this.row != null) {
+      if (this.skip > 0) {
+        throw ArgumentError('skip cannot be used with row and column set.');
+      }
+      if (this.wrap) {
+        throw ArgumentError('wrap cannot be used with row and column set.');
+      }
+    }
     if (this.row != null && this.row! < 0) {
       throw ArgumentError('row must be positive.');
     }

@@ -40,6 +40,34 @@ void main() {
       expect(config.row, 1);
       expect(config.column, 2);
     });
+    test('wrap / row / column', () {
+      expect(
+          () => ChildConfiguration(
+              row: 1,
+              column: 2,
+              spanX: 1,
+              spanY: 2,
+              growX: false,
+              growY: true,
+              skip: 1,
+              wrap: false,
+              alignment: Alignment.center),
+          throwsA(isA<ArgumentError>()));
+    });
+    test('wrap / row / column', () {
+      expect(
+          () => ChildConfiguration(
+              row: 1,
+              column: 2,
+              spanX: 1,
+              spanY: 2,
+              growX: false,
+              growY: true,
+              skip: 0,
+              wrap: true,
+              alignment: Alignment.center),
+          throwsA(isA<ArgumentError>()));
+    });
     test('no column', () {
       expect(
           () => ChildConfiguration(

@@ -17,8 +17,6 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       bool growY = false,
       int skip = 0,
       Alignment alignment = Alignment.center}) {
-    //TODO error wrap and row and column
-    //TODO error skip and row and column
     return GridChild._(
         child: child,
         configuration: ChildConfiguration(
