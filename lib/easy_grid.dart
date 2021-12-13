@@ -1,5 +1,6 @@
 library easy_grid;
 
+export 'src/grid_child.dart';
 export 'src/grid_column.dart';
 export 'src/grid_row.dart';
 export 'src/axis_alignment.dart';

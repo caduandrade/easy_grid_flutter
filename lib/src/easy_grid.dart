@@ -1,10 +1,7 @@
-import 'package:easy_grid/src/private/configurations.dart';
-import 'package:easy_grid/src/easy_grid_parent_data.dart';
+import 'package:easy_grid/src/grid_child.dart';
 import 'package:easy_grid/src/easy_grid_render_box.dart';
 import 'package:easy_grid/src/grid_column.dart';
 import 'package:easy_grid/src/grid_row.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -36,65 +33,4 @@ class EasyGrid extends MultiChildRenderObjectWidget {
 
 class _EasyGridElement extends MultiChildRenderObjectElement {
   _EasyGridElement(EasyGrid widget) : super(widget);
-}
-
-class GridChild extends ParentDataWidget<EasyGridParentData> {
-  factory GridChild(
-      {required Widget child,
-      int? row,
-      int? column,
-      int spanX = 1,
-      int spanY = 1,
-      bool wrap = false,
-      bool growX = false,
-      bool growY = false,
-      int skip = 0,
-      Alignment alignment = Alignment.center}) {
-    //TODO error wrap and row and column
-    //TODO error skip and row and column
-    //TODO error row without column
-    //TODO error column without row
-    return GridChild._(
-        child: child,
-        configuration: ChildConfiguration(
-            row: row,
-            column: column,
-            spanX: spanX,
-            spanY: spanY,
-            wrap: wrap,
-            growX: growX,
-            growY: growY,
-            skip: skip,
-            alignment: alignment));
-  }
-
-  GridChild._({
-    required this.configuration,
-    required Widget child,
-  }) : super(child: child);
-
-  final ChildConfiguration configuration;
-
-  @override
-  void applyParentData(RenderObject renderObject) {
-    final EasyGridParentData parentData =
-        renderObject.parentData! as EasyGridParentData;
-    if (parentData.configuration != configuration) {
-      parentData.configuration = configuration;
-      final AbstractNode? targetParent = renderObject.parent;
-      if (targetParent is RenderObject) targetParent.markNeedsLayout();
-    }
-  }
-
-  @override
-  Type get debugTypicalAncestorWidgetClass => EasyGrid;
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(
-        DiagnosticsProperty<Object>('configuration.row', configuration.row));
-    properties.add(DiagnosticsProperty<Object>(
-        'configuration.column', configuration.column));
-  }
 }
