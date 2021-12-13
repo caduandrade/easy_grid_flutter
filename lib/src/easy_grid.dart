@@ -1,6 +1,4 @@
-import 'package:easy_grid/src/axis_alignment.dart';
-import 'package:easy_grid/src/axis_behavior.dart';
-import 'package:easy_grid/src/configurations.dart';
+import 'package:easy_grid/src/private/configurations.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/easy_grid_render_box.dart';
 import 'package:easy_grid/src/grid_column.dart';
@@ -14,41 +12,25 @@ import 'package:flutter/widgets.dart';
 class EasyGrid extends MultiChildRenderObjectWidget {
   EasyGrid._(
       {required List<GridChild> children,
-      required this.horizontalBehavior,
-      required this.verticalBehavior,
       required this.columns,
       required this.rows})
       : super(children: children);
 
   factory EasyGrid(
       {required List<GridChild> children,
-      AxisBehavior horizontalBehavior = AxisBehavior.constrained,
-      AxisBehavior verticalBehavior = AxisBehavior.constrained,
       List<GridColumn>? columns,
       List<GridRow>? rows}) {
-
     //TODO remove factor?
 
-    return EasyGrid._(
-        children: children,
-        horizontalBehavior: horizontalBehavior,
-        verticalBehavior: verticalBehavior,
-        columns: columns,
-        rows: rows);
+    return EasyGrid._(children: children, columns: columns, rows: rows);
   }
 
-  final AxisBehavior horizontalBehavior;
-  final AxisBehavior verticalBehavior;
   final List<GridColumn>? columns;
   final List<GridRow>? rows;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return EasyGridRenderBox(
-        horizontalBehavior: horizontalBehavior,
-        verticalBehavior: verticalBehavior,
-    columns: columns,
-    rows: rows);
+    return EasyGridRenderBox(columns: columns, rows: rows);
   }
 }
 

@@ -32,11 +32,14 @@ class MyHomePage extends StatelessWidget {
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
     //children.add(EasyGridChild(child:  textField, wrap: true));
-    children.add(GridChild(child: SizedBox(child: textField, width: 600), wrap: true));
+    //children.add(GridChild(child: SizedBox(child: textField, width: 600), wrap: true));
     //children.add(EasyGridChild(child: textField, wrap: true));
-    children.add(GridChild(child: Text('3')));
+    //children.add(GridChild(child: Text('3')));
   //  return Scaffold(body: SingleChildScrollView(child:SingleChildScrollView(child:EasyGrid(children: children),scrollDirection: Axis.vertical,),scrollDirection: Axis.horizontal));
-   // return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children), reverse: false));
+    //return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children)));
     return Scaffold(body: EasyGrid(children: children));
+    //return Scaffold(body: SingleChildScrollView(child:IntrinsicWidth(child:EasyGrid(children: children))));
+    //return Scaffold(body: IntrinsicWidth(child:EasyGrid(children: children)));
+
   }
 }

@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:easy_grid/src/axis_behavior.dart';
-import 'package:easy_grid/src/configurations.dart';
-import 'package:easy_grid/src/easy_grid_layout.dart';
+import 'package:easy_grid/src/private/configurations.dart';
+import 'package:easy_grid/src/private/easy_grid_layout.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/grid_column.dart';
 import 'package:easy_grid/src/grid_row.dart';
@@ -15,12 +14,8 @@ class EasyGridRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, EasyGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, EasyGridParentData> {
-  EasyGridRenderBox(
-      {required this.horizontalBehavior, required this.verticalBehavior,
-      this.columns, this.rows});
+  EasyGridRenderBox({this.columns, this.rows});
 
-  final AxisBehavior horizontalBehavior;
-  final AxisBehavior verticalBehavior;
   final List<GridColumn>? columns;
   final List<GridRow>? rows;
 
@@ -35,6 +30,7 @@ class EasyGridRenderBox extends RenderBox
     DateTime start = DateTime.now();
 
     final BoxConstraints constraints = this.constraints;
+    print('constraints: $constraints');
 
     List<RenderBox> children = [];
     RenderBox? child = firstChild;
@@ -47,18 +43,20 @@ class EasyGridRenderBox extends RenderBox
       children.add(child);
       child = parentData.nextSibling;
     }
-    EasyGridLayout layout = EasyGridLayout.build(children, this.columns,this.rows);
+    EasyGridLayout layout = EasyGridLayout.fromRenderBox(
+        children: children, columns: this.columns, rows: this.rows);
 
     layout.iterate((row, column, child) {
       final EasyGridParentData parentData = child.easyGridParentData();
       ChildConfiguration configuration = parentData.configuration!;
-      if (parentData.hasSize == false) {
-        BoxConstraints c = BoxConstraints.loose(Size.infinite);
-        //  c= BoxConstraints.loose(Size(500,500));
-        //child.layout(constraints, parentUsesSize: true);
-        child.layout(c, parentUsesSize: true);
-        parentData.hasSize = true;
-      }
+      //if (parentData.hasSize == false) {
+      // BoxConstraints c = BoxConstraints.loose(Size.infinite);
+      //  c= BoxConstraints.loose(Size(500,500));
+
+      child.layout(constraints, parentUsesSize: true);
+      //  child.layout(c, parentUsesSize: true);
+      parentData.hasSize = true;
+      //  }
       //TODO handle spans
       layout.updateMaxWidth(column: column, width: child.size.width);
       layout.updateMaxHeight(row: row, height: child.size.height);
@@ -73,7 +71,7 @@ class EasyGridRenderBox extends RenderBox
       ChildConfiguration configuration = parentData.configuration!;
 
       //TODO handle spans
-     double x = layout.columnX(column: parentData.initialColumn!)!;
+      double x = layout.columnX(column: parentData.initialColumn!)!;
       double y = layout.rowY(row: parentData.initialRow!)!;
 
       parentData.offset = Offset(x, y);
@@ -81,29 +79,23 @@ class EasyGridRenderBox extends RenderBox
 
     // updating the size...
     double width = 0;
-    if (this.horizontalBehavior == AxisBehavior.fitted) {
-      width = constraints.maxWidth;
+    if (constraints.hasInfiniteWidth) {
+      width = layout.totalWidth();
     } else {
-      width=layout.totalWidth();
-      if (this.horizontalBehavior == AxisBehavior.constrained) {
-        width = math.min(constraints.maxWidth, width);
-      }
+      width = math.min(constraints.maxWidth, layout.totalWidth());
     }
     double height = 0;
-    if (this.verticalBehavior == AxisBehavior.fitted) {
-      height = constraints.maxHeight;
+    if (constraints.hasInfiniteHeight) {
+      height = layout.totalHeight();
     } else {
-      height=layout.totalHeight();
-      if (this.verticalBehavior == AxisBehavior.constrained) {
-        height = math.min(constraints.maxHeight, height);
-      }
+      height = math.min(constraints.maxHeight, layout.totalHeight());
     }
     size = Size(width, height);
+    print('size: $size');
 
     DateTime e = DateTime.now();
     print('time: ' + e.difference(start).inMilliseconds.toString());
   }
-
 
   @override
   void paint(PaintingContext context, Offset offset) {

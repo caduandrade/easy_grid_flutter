@@ -1,5 +1,1 @@
-enum AxisAlignment {
-  start,
-  end,
-  center
-}
+enum AxisAlignment { start, end, center }
