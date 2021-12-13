@@ -44,20 +44,20 @@ class EasyGridLayoutBuilder {
 
     if (rows != null) {
       rows.forEach((row) {
-        _rows.add(LayoutRow(alignment: row.alignment));
+        _rows.add(LayoutRow(row));
       });
     }
     for (int row = _rows.length; row <= _maxRow; row++) {
-      _rows.add(LayoutRow());
+      _rows.add(LayoutRow(GridRow()));
     }
 
     if (columns != null) {
       columns.forEach((column) {
-        _columns.add(LayoutColumn(alignment: column.alignment));
+        _columns.add(LayoutColumn(column));
       });
     }
     for (int column = _columns.length; column <= _maxColumn; column++) {
-      _columns.add(LayoutColumn());
+      _columns.add(LayoutColumn(GridColumn()));
     }
 
     return EasyGridLayout(children: _children, rows: _rows, columns: _columns);

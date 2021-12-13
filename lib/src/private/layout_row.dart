@@ -1,7 +1,12 @@
 import 'package:easy_grid/src/axis_alignment.dart';
+import 'package:easy_grid/src/grid_row.dart';
 
 class LayoutRow {
-  LayoutRow({this.alignment = AxisAlignment.center});
+  factory LayoutRow(GridRow row) {
+    return LayoutRow._(alignment: row.alignment);
+  }
+
+  LayoutRow._({required this.alignment});
 
   final AxisAlignment alignment;
 

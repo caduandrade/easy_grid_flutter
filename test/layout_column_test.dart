@@ -1,3 +1,4 @@
+import 'package:easy_grid/easy_grid.dart';
 import 'package:easy_grid/src/axis_alignment.dart';
 import 'package:easy_grid/src/private/layout_column.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('LayoutColumn', () {
     test('OK', () {
-      LayoutColumn column = LayoutColumn();
+      LayoutColumn column = LayoutColumn(GridColumn());
 
       expect(column.alignment, AxisAlignment.center);
 
@@ -20,7 +21,7 @@ void main() {
       expect(column.x, -1);
     });
     test('Error', () {
-      LayoutColumn column = LayoutColumn();
+      LayoutColumn column = LayoutColumn(GridColumn());
       expect(() => column.width = -1, throwsA(isA<ArgumentError>()));
     });
   });

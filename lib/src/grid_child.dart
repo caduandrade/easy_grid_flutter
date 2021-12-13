@@ -14,7 +14,13 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       int spanY = 1,
       bool growX = false,
       bool growY = false,
-      Alignment alignment = Alignment.center}) {
+      Alignment alignment = Alignment.center,
+      double minWidth = 0,
+      double maxWidth = double.infinity,
+      double? width,
+      double minHeight = 0,
+      double maxHeight = double.infinity,
+      double? height}) {
     return GridChild._(
         child: child,
         configuration: ChildConfiguration(
@@ -26,7 +32,13 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
             growX: growX,
             growY: growY,
             skip: 0,
-            alignment: alignment));
+            alignment: alignment,
+            minWidth: minWidth,
+            maxWidth: maxWidth,
+            minHeight: minHeight,
+            maxHeight: maxHeight,
+            width: width,
+            height: height));
   }
 
   factory GridChild(
@@ -37,7 +49,13 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       bool growX = false,
       bool growY = false,
       int skip = 0,
-      Alignment alignment = Alignment.center}) {
+      Alignment alignment = Alignment.center,
+      double minWidth = 0,
+      double maxWidth = double.infinity,
+      double? width,
+      double minHeight = 0,
+      double maxHeight = double.infinity,
+      double? height}) {
     return GridChild._(
         child: child,
         configuration: ChildConfiguration(
@@ -47,7 +65,13 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
             growX: growX,
             growY: growY,
             skip: skip,
-            alignment: alignment));
+            alignment: alignment,
+            minWidth: minWidth,
+            maxWidth: maxWidth,
+            minHeight: minHeight,
+            maxHeight: maxHeight,
+            width: width,
+            height: height));
   }
 
   GridChild._({
@@ -78,5 +102,31 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
         DiagnosticsProperty<Object>('configuration.row', configuration.row));
     properties.add(DiagnosticsProperty<Object>(
         'configuration.column', configuration.column));
+    properties.add(
+        DiagnosticsProperty<Object>('configuration.wrap', configuration.wrap));
+    properties.add(
+        DiagnosticsProperty<Object>('configuration.skip', configuration.skip));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.growX', configuration.growX));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.growY', configuration.growY));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.spanX', configuration.spanX));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.spanY', configuration.spanY));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.alignment', configuration.alignment));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.minWidth', configuration.minWidth));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.maxWidth', configuration.maxWidth));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.width', configuration.width));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.minHeight', configuration.minHeight));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.maxHeight', configuration.maxHeight));
+    properties.add(DiagnosticsProperty<Object>(
+        'configuration.height', configuration.height));
   }
 }

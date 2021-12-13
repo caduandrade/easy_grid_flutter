@@ -1,7 +1,12 @@
+import 'package:easy_grid/easy_grid.dart';
 import 'package:easy_grid/src/axis_alignment.dart';
 
 class LayoutColumn {
-  LayoutColumn({this.alignment = AxisAlignment.center});
+  factory LayoutColumn(GridColumn column) {
+    return LayoutColumn._(alignment: column.alignment);
+  }
+
+  LayoutColumn._({required this.alignment});
 
   final AxisAlignment alignment;
 

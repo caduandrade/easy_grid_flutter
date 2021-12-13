@@ -10,7 +10,13 @@ class ChildConfiguration {
       required this.growX,
       required this.growY,
       required this.skip,
-      required this.alignment}) {
+      required this.alignment,
+      required this.minWidth,
+      required this.maxWidth,
+      this.width,
+      required this.minHeight,
+      required this.maxHeight,
+      this.height}) {
     if (this.row != null && this.column == null) {
       throw ArgumentError('When the row is defined, the column must also be.');
     }
@@ -40,6 +46,24 @@ class ChildConfiguration {
     if (this.skip < 0) {
       throw ArgumentError('skip must be positive.');
     }
+    if (this.minWidth == double.negativeInfinity) {
+      throw ArgumentError('minWidth can not be negativeInfinity.');
+    }
+    if (this.minWidth == double.infinity) {
+      throw ArgumentError('minWidth can not be infinity.');
+    }
+    if (this.maxWidth != double.infinity && this.minWidth > this.maxWidth) {
+      throw ArgumentError('maxWidth must be bigger than minWidth.');
+    }
+    if (this.minHeight == double.negativeInfinity) {
+      throw ArgumentError('minHeight can not be negativeInfinity.');
+    }
+    if (this.minHeight == double.infinity) {
+      throw ArgumentError('minHeight can not be infinity.');
+    }
+    if (this.maxHeight != double.infinity && this.minHeight > this.maxHeight) {
+      throw ArgumentError('maxHeight must be bigger than minHeight.');
+    }
   }
 
   final int? row;
@@ -51,4 +75,10 @@ class ChildConfiguration {
   final bool growY;
   final int skip;
   final Alignment alignment;
+  final double minWidth;
+  final double maxWidth;
+  final double? width;
+  final double minHeight;
+  final double maxHeight;
+  final double? height;
 }
