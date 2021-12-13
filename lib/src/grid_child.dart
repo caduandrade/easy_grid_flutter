@@ -6,10 +6,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class GridChild extends ParentDataWidget<EasyGridParentData> {
+  factory GridChild.at(
+      {required Widget child,
+      required int row,
+      required int column,
+      int spanX = 1,
+      int spanY = 1,
+      bool growX = false,
+      bool growY = false,
+      Alignment alignment = Alignment.center}) {
+    return GridChild._(
+        child: child,
+        configuration: ChildConfiguration(
+            row: row,
+            column: column,
+            spanX: spanX,
+            spanY: spanY,
+            wrap: false,
+            growX: growX,
+            growY: growY,
+            skip: 0,
+            alignment: alignment));
+  }
+
   factory GridChild(
       {required Widget child,
-      int? row,
-      int? column,
       int spanX = 1,
       int spanY = 1,
       bool wrap = false,
@@ -20,8 +41,6 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
     return GridChild._(
         child: child,
         configuration: ChildConfiguration(
-            row: row,
-            column: column,
             spanX: spanX,
             spanY: spanY,
             wrap: wrap,
