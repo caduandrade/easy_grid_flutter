@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_grid/src/easy_grid.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/private/configurations.dart';
@@ -18,8 +19,6 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       Alignment alignment = Alignment.center}) {
     //TODO error wrap and row and column
     //TODO error skip and row and column
-    //TODO error row without column
-    //TODO error column without row
     return GridChild._(
         child: child,
         configuration: ChildConfiguration(
