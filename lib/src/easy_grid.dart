@@ -6,21 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-class EasyGrid extends MultiChildRenderObjectWidget {
-  EasyGrid._(
-      {required List<GridChild> children,
-      required this.columns,
-      required this.rows})
-      : super(children: children);
+class EasyGrid extends StatelessWidget {
+  final List<GridChild> children;
+  final List<GridColumn>? columns;
+  final List<GridRow>? rows;
 
-  factory EasyGrid(
-      {required List<GridChild> children,
-      List<GridColumn>? columns,
-      List<GridRow>? rows}) {
-    //TODO remove factor?
+  const EasyGrid({Key? key, this.columns, this.rows, required this.children})
+      : super(key: key);
 
-    return EasyGrid._(children: children, columns: columns, rows: rows);
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      print('tela: $constraints');
+      return SingleChildScrollView(
+          child: EasyGrid2(children: children, columns: columns, rows: rows));
+    });
   }
+}
+
+class EasyGrid2 extends MultiChildRenderObjectWidget {
+  EasyGrid2({required List<GridChild> children, this.columns, this.rows})
+      : super(children: children);
 
   final List<GridColumn>? columns;
   final List<GridRow>? rows;
@@ -29,8 +35,16 @@ class EasyGrid extends MultiChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     return EasyGridRenderBox(columns: columns, rows: rows);
   }
+
+  @override
+  void updateRenderObject(
+      BuildContext context, EasyGridRenderBox renderObject) {
+    renderObject
+      ..columns = columns
+      ..rows = rows;
+  }
 }
 
 class _EasyGridElement extends MultiChildRenderObjectElement {
-  _EasyGridElement(EasyGrid widget) : super(widget);
+  _EasyGridElement(EasyGrid2 widget) : super(widget);
 }

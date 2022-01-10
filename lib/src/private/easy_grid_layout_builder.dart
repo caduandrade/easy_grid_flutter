@@ -14,13 +14,33 @@ class EasyGridLayoutBuilder {
   final List<LayoutRow> _rows = [];
   final List<LayoutColumn> _columns = [];
 
-  int _maxRow = 0;
-  int _maxColumn = 0;
-
   EasyGridLayout build(
-      {required List<RenderBox> children,
+      {required RenderBox? firstChild,
       required List<GridColumn>? columns,
       required List<GridRow>? rows}) {
+    if (rows != null) {
+      rows.forEach((row) {
+        _rows.add(LayoutRow(row));
+      });
+    }
+    if (columns != null) {
+      columns.forEach((column) {
+        _columns.add(LayoutColumn(column));
+      });
+    }
+
+    List<RenderBox> children = [];
+    RenderBox? child = firstChild;
+    while (child != null) {
+      final EasyGridParentData parentData = child.easyGridParentData();
+      if (parentData.configuration == null) {
+        throw StateError('Null constraints');
+      }
+      parentData.clear();
+      children.add(child);
+      child = parentData.nextSibling;
+    }
+
     int column = 0;
     int row = 0;
     children.forEach((child) {
@@ -42,25 +62,25 @@ class EasyGridLayoutBuilder {
       }
     });
 
-    if (rows != null) {
-      rows.forEach((row) {
-        _rows.add(LayoutRow(row));
-      });
-    }
-    for (int row = _rows.length; row <= _maxRow; row++) {
-      _rows.add(LayoutRow(GridRow()));
-    }
-
-    if (columns != null) {
-      columns.forEach((column) {
-        _columns.add(LayoutColumn(column));
-      });
-    }
-    for (int column = _columns.length; column <= _maxColumn; column++) {
-      _columns.add(LayoutColumn(GridColumn()));
-    }
-
     return EasyGridLayout(children: _children, rows: _rows, columns: _columns);
+  }
+
+  LayoutRow _layoutRow(int row) {
+    if (row >= _rows.length) {
+      for (int i = _rows.length; i <= row; i++) {
+        _rows.add(LayoutRow(GridRow()));
+      }
+    }
+    return _rows[row];
+  }
+
+  LayoutColumn _layoutColumn(int column) {
+    if (column >= _columns.length) {
+      for (int i = _columns.length; i <= column; i++) {
+        _columns.add(LayoutColumn(GridColumn()));
+      }
+    }
+    return _columns[column];
   }
 
   void _addChild(
@@ -73,13 +93,13 @@ class EasyGridLayoutBuilder {
     ChildConfiguration configuration = parentData.configuration!;
 
     for (int r = row; r < row + configuration.spanX; r++) {
+      _layoutRow(r).children.add(child);
       for (int c = column; c < column + configuration.spanY; c++) {
+        _layoutColumn(c).children.add(child);
         ChildAddress key = ChildAddress(row: r, column: c);
         if (_children.containsKey(key)) {
-          //TODO error collision
+          throw StateError('Collision in column $c and row $r');
         }
-        _maxRow = math.max(_maxRow, r);
-        _maxColumn = math.max(_maxColumn, c);
         _children[key] = child;
       }
     }

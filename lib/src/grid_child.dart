@@ -93,7 +93,7 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
   }
 
   @override
-  Type get debugTypicalAncestorWidgetClass => EasyGrid;
+  Type get debugTypicalAncestorWidgetClass => EasyGrid2;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

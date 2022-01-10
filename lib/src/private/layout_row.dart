@@ -1,5 +1,6 @@
 import 'package:easy_grid/src/axis_alignment.dart';
 import 'package:easy_grid/src/grid_row.dart';
+import 'package:flutter/widgets.dart';
 
 class LayoutRow {
   factory LayoutRow(GridRow row) {
@@ -7,6 +8,8 @@ class LayoutRow {
   }
 
   LayoutRow._({required this.alignment});
+
+  List<RenderBox> children = [];
 
   final AxisAlignment alignment;
 

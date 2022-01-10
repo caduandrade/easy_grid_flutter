@@ -10,6 +10,7 @@ class EasyGridExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'EasyGrid Example',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -31,12 +32,15 @@ class MyHomePage extends StatelessWidget {
 
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
-    //children.add(EasyGridChild(child:  textField, wrap: true));
+    children.add(GridChild(child:  textField));
+    //children.add(GridChild(child:  IntrinsicWidth(child:textField)));
     //children.add(GridChild(child: SizedBox(child: textField, width: 600), wrap: true));
     //children.add(EasyGridChild(child: textField, wrap: true));
     //children.add(GridChild(child: Text('3')));
   //  return Scaffold(body: SingleChildScrollView(child:SingleChildScrollView(child:EasyGrid(children: children),scrollDirection: Axis.vertical,),scrollDirection: Axis.horizontal));
     //return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children)));
+    //return Scaffold(body:CustomScrollView(slivers: [SliverFillRemaining(hasScrollBody: false, child: EasyGrid(children: children))]));
+
     return Scaffold(body: EasyGrid(children: children));
     //return Scaffold(body: SingleChildScrollView(child:IntrinsicWidth(child:EasyGrid(children: children))));
     //return Scaffold(body: IntrinsicWidth(child:EasyGrid(children: children)));

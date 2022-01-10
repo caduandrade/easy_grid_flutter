@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 import 'dart:ui';
-
+import 'package:easy_grid/src/private/easy_grid_layout_builder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:easy_grid/src/private/configurations.dart';
 import 'package:easy_grid/src/private/easy_grid_layout.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/grid_column.dart';
 import 'package:easy_grid/src/grid_row.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,10 +14,25 @@ class EasyGridRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, EasyGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, EasyGridParentData> {
-  EasyGridRenderBox({this.columns, this.rows});
+  EasyGridRenderBox({List<GridColumn>? columns, List<GridRow>? rows})
+      : this._columns = columns,
+        this._rows = rows;
 
-  final List<GridColumn>? columns;
-  final List<GridRow>? rows;
+  List<GridColumn>? _columns;
+  set columns(List<GridColumn>? columns) {
+    if (!listEquals(_columns, columns)) {
+      _columns = columns;
+      markNeedsLayout();
+    }
+  }
+
+  List<GridRow>? _rows;
+  set rows(List<GridRow>? rows) {
+    if (!listEquals(_rows, rows)) {
+      _rows = rows;
+      markNeedsLayout();
+    }
+  }
 
   @override
   void setupParentData(covariant RenderObject child) {
@@ -32,28 +47,32 @@ class EasyGridRenderBox extends RenderBox
     final BoxConstraints constraints = this.constraints;
     print('constraints: $constraints');
 
-    List<RenderBox> children = [];
-    RenderBox? child = firstChild;
-    while (child != null) {
-      final EasyGridParentData parentData = child.easyGridParentData();
-      if (parentData.configuration == null) {
-        throw StateError('Null constraints');
-      }
-      parentData.clear();
-      children.add(child);
-      child = parentData.nextSibling;
-    }
-    EasyGridLayout layout = EasyGridLayout.fromRenderBox(
-        children: children, columns: this.columns, rows: this.rows);
+    EasyGridLayoutBuilder layoutBuilder = EasyGridLayoutBuilder();
+    EasyGridLayout layout = layoutBuilder.build(
+        firstChild: firstChild, columns: _columns, rows: _rows);
 
     layout.iterate((row, column, child) {
+      // verificar o peso de cada coluna
+      // calcular primeiro size de cada um dado max w = max w do cosntraint
+
+      // distribuir width entre colunas com grow e pesos  (grow e peso 0?) - como descobrir max w de peso 0?
+      //
+
       final EasyGridParentData parentData = child.easyGridParentData();
       ChildConfiguration configuration = parentData.configuration!;
       //if (parentData.hasSize == false) {
       // BoxConstraints c = BoxConstraints.loose(Size.infinite);
       //  c= BoxConstraints.loose(Size(500,500));
-
-      child.layout(constraints, parentUsesSize: true);
+      BoxConstraints constraints2 = constraints;
+      if (column == 991) {
+        double minh = child.getMinIntrinsicWidth(constraints.maxHeight);
+        double maxh = child.getMaxIntrinsicWidth(constraints.maxHeight);
+        constraints2 = BoxConstraints(
+            minWidth: minh,
+            maxWidth: maxh,
+            maxHeight: this.constraints.maxHeight);
+      }
+      child.layout(constraints2, parentUsesSize: true);
       //  child.layout(c, parentUsesSize: true);
       parentData.hasSize = true;
       //  }

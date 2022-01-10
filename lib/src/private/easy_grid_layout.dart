@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:easy_grid/easy_grid.dart';
+import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/private/child_address.dart';
-import 'package:easy_grid/src/private/easy_grid_layout_builder.dart';
 import 'package:easy_grid/src/private/layout_column.dart';
 import 'package:easy_grid/src/private/layout_row.dart';
 import 'package:flutter/rendering.dart';
@@ -11,14 +10,6 @@ import 'package:flutter/widgets.dart';
 typedef LayoutIterator = Function(int row, int column, RenderBox child);
 
 class EasyGridLayout {
-  factory EasyGridLayout.fromRenderBox(
-      {required List<RenderBox> children,
-      required List<GridColumn>? columns,
-      required List<GridRow>? rows}) {
-    EasyGridLayoutBuilder builder = EasyGridLayoutBuilder();
-    return builder.build(children: children, columns: columns, rows: rows);
-  }
-
   EasyGridLayout(
       {required Map<ChildAddress, RenderBox> children,
       required List<LayoutRow> rows,
@@ -106,5 +97,12 @@ class EasyGridLayout {
   RenderBox? getChild({required int row, required int column}) {
     ChildAddress key = ChildAddress(row: row, column: column);
     return _children[key];
+  }
+}
+
+/// Utility extension to facilitate obtaining parent data.
+extension _EasyGridParentDataGetter on RenderObject {
+  EasyGridParentData easyGridParentData() {
+    return this.parentData as EasyGridParentData;
   }
 }

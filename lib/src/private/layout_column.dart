@@ -1,5 +1,6 @@
 import 'package:easy_grid/easy_grid.dart';
 import 'package:easy_grid/src/axis_alignment.dart';
+import 'package:flutter/widgets.dart';
 
 class LayoutColumn {
   factory LayoutColumn(GridColumn column) {
@@ -7,6 +8,8 @@ class LayoutColumn {
   }
 
   LayoutColumn._({required this.alignment});
+
+  List<RenderBox> children = [];
 
   final AxisAlignment alignment;
 

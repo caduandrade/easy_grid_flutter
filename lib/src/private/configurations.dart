@@ -81,4 +81,43 @@ class ChildConfiguration {
   final double minHeight;
   final double maxHeight;
   final double? height;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChildConfiguration &&
+          runtimeType == other.runtimeType &&
+          row == other.row &&
+          column == other.column &&
+          spanX == other.spanX &&
+          spanY == other.spanY &&
+          wrap == other.wrap &&
+          growX == other.growX &&
+          growY == other.growY &&
+          skip == other.skip &&
+          alignment == other.alignment &&
+          minWidth == other.minWidth &&
+          maxWidth == other.maxWidth &&
+          width == other.width &&
+          minHeight == other.minHeight &&
+          maxHeight == other.maxHeight &&
+          height == other.height;
+
+  @override
+  int get hashCode =>
+      row.hashCode ^
+      column.hashCode ^
+      spanX.hashCode ^
+      spanY.hashCode ^
+      wrap.hashCode ^
+      growX.hashCode ^
+      growY.hashCode ^
+      skip.hashCode ^
+      alignment.hashCode ^
+      minWidth.hashCode ^
+      maxWidth.hashCode ^
+      width.hashCode ^
+      minHeight.hashCode ^
+      maxHeight.hashCode ^
+      height.hashCode;
 }
