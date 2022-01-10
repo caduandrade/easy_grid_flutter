@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'dart:ui';
-import 'package:easy_grid/src/private/easy_grid_layout_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:easy_grid/src/private/configurations.dart';
 import 'package:easy_grid/src/private/easy_grid_layout.dart';
@@ -47,9 +46,8 @@ class EasyGridRenderBox extends RenderBox
     final BoxConstraints constraints = this.constraints;
     print('constraints: $constraints');
 
-    EasyGridLayoutBuilder layoutBuilder = EasyGridLayoutBuilder();
-    EasyGridLayout layout = layoutBuilder.build(
-        firstChild: firstChild, columns: _columns, rows: _rows);
+    EasyGridLayout layout =
+        EasyGridLayout(firstChild: firstChild, columns: _columns, rows: _rows);
 
     layout.iterate((row, column, child) {
       // verificar o peso de cada coluna
