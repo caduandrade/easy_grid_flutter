@@ -1,54 +1,52 @@
+import 'dart:collection';
+import 'dart:developer';
 import 'dart:math' as math;
-
+import 'package:logging/logging.dart';
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/grid_column.dart';
 import 'package:easy_grid/src/grid_row.dart';
-import 'package:easy_grid/src/private/child_address.dart';
 import 'package:easy_grid/src/private/configurations.dart';
-import 'package:easy_grid/src/private/layout_column.dart';
-import 'package:easy_grid/src/private/layout_row.dart';
+import 'package:easy_grid/src/private/column_data.dart';
+import 'package:easy_grid/src/private/row_data.dart';
 import 'package:flutter/widgets.dart';
 
-typedef LayoutIterator = Function(int row, int column, RenderBox child);
-
 class EasyGridLayout {
-  EasyGridLayout._();
+  EasyGridLayout._(this.parentsData);
 
   factory EasyGridLayout(
-      {required RenderBox? firstChild,
-        required List<GridColumn>? columns,
-        required List<GridRow>? rows}) {
-    EasyGridLayout layout = EasyGridLayout._();
+      {required List<EasyGridParentData> parentsData,
+      required List<GridColumn>? columns,
+      required List<GridRow>? rows}) {
+    EasyGridLayout layout = EasyGridLayout._(parentsData);
 
     if (rows != null) {
       rows.forEach((row) {
-        layout._rows.add(LayoutRow(row));
+        layout._rows.add(RowData(row: row));
       });
     }
     if (columns != null) {
       columns.forEach((column) {
-        layout._columns.add(LayoutColumn(column));
+        layout._columns.add(ColumnData(column: column));
       });
     }
 
     int column = 0;
     int row = 0;
-    RenderBox? child = firstChild;
-    while (child != null) {
-      final EasyGridParentData parentData = child.easyGridParentData();
-      if (parentData.configuration == null) {
-        throw StateError('Null constraints');
-      }
+    HashSet<_ChildAddress> addresses = HashSet<_ChildAddress>();
+    for (int index =0; index<parentsData.length;index++) {
+      EasyGridParentData parentData =parentsData[index];
       parentData.clear();
+
+      parentData.index=index;
 
       ChildConfiguration configuration = parentData.configuration!;
       if (configuration.row != null && configuration.column != null) {
-        layout._addChild(
-            child: child,
+        layout._addChild(addresses:addresses,
+            parentData: parentData,
             row: configuration.row!,
             column: configuration.column!);
       } else {
-        layout._addChild(child: child, row: row, column: column);
+        layout._addChild(addresses:addresses,parentData: parentData, row: row, column: column);
         if (configuration.wrap) {
           row++;
           column = 0;
@@ -56,20 +54,20 @@ class EasyGridLayout {
           column++;
         }
       }
-
-      child = parentData.nextSibling;
     }
 
     return layout;
   }
 
-  final Map<ChildAddress, RenderBox> _children= Map<ChildAddress, RenderBox>();
-  final List<LayoutRow> _rows=[];
-  final List<LayoutColumn> _columns=[];
+  final List<RowData> _rows = [];
+  final List<ColumnData> _columns = [];
+  final List<EasyGridParentData> parentsData;
 
   void _addChild(
-      {required RenderBox child, required int row, required int column}) {
-    final EasyGridParentData parentData = child.easyGridParentData();
+      {required EasyGridParentData parentData,
+      required HashSet<_ChildAddress> addresses,
+      required int row,
+      required int column}) {
     if (parentData.configuration == null) {
       throw StateError('No parentData configuration');
     }
@@ -77,14 +75,12 @@ class EasyGridLayout {
     ChildConfiguration configuration = parentData.configuration!;
 
     for (int r = row; r < row + configuration.spanX; r++) {
-      _layoutRow(r).children.add(child);
+      _row(r).parentsData.add(parentData);
       for (int c = column; c < column + configuration.spanY; c++) {
-        _layoutColumn(c).children.add(child);
-        ChildAddress key = ChildAddress(row: r, column: c);
-        if (_children.containsKey(key)) {
+        _column(c).parentsData.add(parentData);
+        if (addresses.add(_ChildAddress(row: r, column: c)) == false) {
           throw StateError('Collision in column $c and row $r');
         }
-        _children[key] = child;
       }
     }
 
@@ -94,28 +90,32 @@ class EasyGridLayout {
     parentData.finalColumn = column + configuration.spanY - 1;
   }
 
-  LayoutRow _layoutRow(int row) {
+  RowData _row(int row) {
     if (row >= _rows.length) {
       for (int i = _rows.length; i <= row; i++) {
-        _rows.add(LayoutRow(GridRow()));
+        _rows.add(RowData(row: GridRow()));
       }
     }
     return _rows[row];
   }
 
-  LayoutColumn _layoutColumn(int column) {
+  ColumnData _column(int column) {
     if (column >= _columns.length) {
       for (int i = _columns.length; i <= column; i++) {
-        _columns.add(LayoutColumn(GridColumn()));
+        _columns.add(ColumnData(column: GridColumn()));
       }
     }
     return _columns[column];
   }
 
+  void calculateMaxWidths(){
+    _columns.forEach((column)=> column.calculateMaxWidth());
+  }
+
   double totalWidth() {
     double total = 0;
     _columns.forEach((element) {
-      total += element.width;
+      total += element.maxWidth;
     });
     return total;
   }
@@ -123,7 +123,7 @@ class EasyGridLayout {
   double totalHeight() {
     double total = 0;
     _rows.forEach((element) {
-      total += element.height;
+      total += element.maxHeight;
     });
     return total;
   }
@@ -134,59 +134,66 @@ class EasyGridLayout {
 
   double? rowY({required int row}) {
     return _rows[row].y;
-  }
+  }  
 
   void updateColumnsX() {
     double x = 0;
-    _columns.forEach((element) {
-      element.x = x;
-      x += element.width;
+    _columns.forEach((column) {
+      column.x = x;
+      x += column.maxWidth;
     });
   }
 
   void updateRowsY() {
     double y = 0;
-    _rows.forEach((element) {
-      element.y = y;
-      y += element.height;
+    _rows.forEach((row) {
+      row.y = y;
+      y += row.maxHeight;
     });
   }
+  
 
-  void forEachChild(Function(RenderBox child) f) {
-    _children.values.forEach(f);
+  double? width({required int column}) {
+    return _columns[column].maxWidth;
   }
 
-  void iterate(LayoutIterator iterator) {
-    for (int row = 0; row < _rows.length; row++) {
-      for (int column = 0; column < _columns.length; column++) {
-        ChildAddress key = ChildAddress(row: row, column: column);
-        RenderBox? child = _children[key];
-        if (child != null) {
-          iterator(row, column, child);
+  double? height({required int row}) {
+    return _rows[row].maxHeight;
+  }
+
+
+
+  void handleAvaiableWidth({required double maxWidth}) {
+    if (maxWidth == double.infinity) {
+      log('Cannot define growPriority with maxWidth infinity constrains',
+          level: Level.WARNING.value);
+      return;
+    }
+    double tw = totalWidth();
+    if (tw<maxWidth) {
+      double fills = 0;
+      for (ColumnData columnData in _columns) {
+        GridColumn column = columnData.column;
+        if (column.fillPriority < 0) {
+          throw StateError(
+              'Invalid growPriority value in column: ${column.fillPriority}');
+        }
+        fills += column.fillPriority;
+      }
+
+      double  w = (maxWidth - tw) / fills;
+      for (ColumnData columnData in _columns) {
+        GridColumn column = columnData.column;
+        if (column.fillPriority > 0) {
+          columnData.incMaxWidth(_convert(w*column.fillPriority));
         }
       }
     }
   }
-
-  double? width({required int column}) {
-    return _columns[column].width;
-  }
-
-  double? height({required int row}) {
-    return _rows[row].height;
-  }
-
-  void updateMaxHeight({required int row, required double height}) {
-    _rows[row].height = math.max(_rows[row].height, height);
-  }
-
-  void updateMaxWidth({required int column, required double width}) {
-    _columns[column].width = math.max(_columns[column].width, width);
-  }
-
-  RenderBox? getChild({required int row, required int column}) {
-    ChildAddress key = ChildAddress(row: row, column: column);
-    return _children[key];
+  
+  double _convert(double value) {
+    double newValue = value.roundToDouble();
+    return newValue;
   }
 }
 
@@ -195,4 +202,22 @@ extension _EasyGridParentDataGetter on RenderObject {
   EasyGridParentData easyGridParentData() {
     return this.parentData as EasyGridParentData;
   }
+}
+
+class _ChildAddress {
+  _ChildAddress({required this.row, required this.column});
+
+  final int row;
+  final int column;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ChildAddress &&
+          runtimeType == other.runtimeType &&
+          row == other.row &&
+          column == other.column;
+
+  @override
+  int get hashCode => row.hashCode ^ column.hashCode;
 }

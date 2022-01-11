@@ -8,13 +8,15 @@ class EasyGridParentData extends ContainerBoxParentData<RenderBox> {
   int? finalRow;
   int? initialColumn;
   int? finalColumn;
-  bool hasSize = false;
+  int? index;
+  Size? size;
 
   void clear() {
     initialRow = null;
     finalRow = null;
     initialColumn = null;
     finalColumn = null;
-    hasSize = false;
+    index=null;
+    size=null;
   }
 }

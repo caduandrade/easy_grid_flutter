@@ -17,23 +17,23 @@ class EasyGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      print('tela: $constraints');
       return SingleChildScrollView(
-          child: EasyGrid2(children: children, columns: columns, rows: rows));
+          child: EasyGrid2(children: children, columns: columns, rows: rows,externalConstraints: constraints));
     });
   }
 }
 
 class EasyGrid2 extends MultiChildRenderObjectWidget {
-  EasyGrid2({required List<GridChild> children, this.columns, this.rows})
+  EasyGrid2({required List<GridChild> children, this.columns, this.rows, required this.externalConstraints})
       : super(children: children);
 
   final List<GridColumn>? columns;
   final List<GridRow>? rows;
+  final BoxConstraints externalConstraints;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return EasyGridRenderBox(columns: columns, rows: rows);
+    return EasyGridRenderBox(columns: columns, rows: rows,externalConstraints:externalConstraints);
   }
 
   @override
@@ -41,7 +41,8 @@ class EasyGrid2 extends MultiChildRenderObjectWidget {
       BuildContext context, EasyGridRenderBox renderObject) {
     renderObject
       ..columns = columns
-      ..rows = rows;
+      ..rows = rows
+    ..externalConstraints=externalConstraints;
   }
 }
 

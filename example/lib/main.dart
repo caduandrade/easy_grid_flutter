@@ -41,7 +41,7 @@ class MyHomePage extends StatelessWidget {
     //return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children)));
     //return Scaffold(body:CustomScrollView(slivers: [SliverFillRemaining(hasScrollBody: false, child: EasyGrid(children: children))]));
 
-    return Scaffold(body: EasyGrid(children: children));
+    return Scaffold(body: EasyGrid(children: children,columns: [GridColumn(fillPriority: 1)],));
     //return Scaffold(body: SingleChildScrollView(child:IntrinsicWidth(child:EasyGrid(children: children))));
     //return Scaffold(body: IntrinsicWidth(child:EasyGrid(children: children)));
 

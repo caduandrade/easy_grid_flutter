@@ -1,7 +1,7 @@
 import 'package:easy_grid/src/axis_alignment.dart';
 import 'package:easy_grid/src/private/configurations.dart';
-import 'package:easy_grid/src/private/layout_column.dart';
-import 'package:easy_grid/src/private/layout_row.dart';
+import 'package:easy_grid/src/private/column_data.dart';
+import 'package:easy_grid/src/private/row_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 
