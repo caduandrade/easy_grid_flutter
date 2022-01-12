@@ -5,8 +5,9 @@ import 'package:easy_grid/src/easy_grid_parent_data.dart';
 import 'package:easy_grid/src/grid_column.dart';
 
 class ColumnData {
-  ColumnData({required this.column});
+  ColumnData({required this.index, required this.column});
 
+  final int index;
   final GridColumn column;
   final List<EasyGridParentData> parentsData = [];
   final HashSet<int> indices =HashSet<int>();

@@ -29,11 +29,16 @@ class MyHomePage extends StatelessWidget {
           border: OutlineInputBorder()
       ),
     );
-
+    TextField textField2 = TextField(
+      decoration: InputDecoration(
+          isDense: true,
+          border: OutlineInputBorder()
+      ),
+    );
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
     children.add(GridChild(child:  textField, wrap: true));
-    children.add(GridChild(child: Text('222'),wrap: true));
+    children.add(GridChild(child: textField2,spanX:2,wrap: true));
     children.add(GridChild(child: Text('33333')));
     children.add(GridChild(child: Text('444444444444444444444')));
     children.add(GridChild(child: Text('55555')));

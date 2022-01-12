@@ -83,7 +83,8 @@ class EasyGridRenderBox extends RenderBox
       final EasyGridParentData parentData = child.easyGridParentData();
       parentData.size = child.size;
       ChildConfiguration configuration = parentData.configuration!;
-      layout.updateX(childIndex: index, size: child.size);
+      //layout.updateX(childIndex: index, size: child.size);
+      layout.updateX3(parentData: parentData);
     }
 
 
@@ -121,7 +122,6 @@ class EasyGridRenderBox extends RenderBox
 
  */
 
-    //layout.calculateMaxWidths();
    // layout.handleAvaiableWidth(maxWidth: _externalConstraints.maxWidth);
     //layout.updateColumnsX();
     layout.updateRowsY();
@@ -151,7 +151,7 @@ class EasyGridRenderBox extends RenderBox
     } else {
       height = math.min(scrollConstraints.maxHeight, layout.totalHeight());
     }
-    size = Size(_externalConstraints.maxWidth, height);
+    size = Size(width, height);
     print('size: $size');
 
     DateTime e = DateTime.now();

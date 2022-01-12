@@ -26,7 +26,7 @@ class EasyGridLayout {
     }
     if (columns != null) {
       columns.forEach((column) {
-        layout._columns.add(ColumnData(column: column));
+        layout._columns.add(ColumnData(index: layout._columns.length, column: column));
       });
     }
 
@@ -63,6 +63,54 @@ class EasyGridLayout {
   final List<ColumnData> _columns = [];
   final List<EasyGridParentData> parentsData;
 
+  void updateX3({required EasyGridParentData parentData}) {
+    double lastMaxX = 0;
+    double? diff;
+    if(parentData.initialColumn! > 0) {
+      lastMaxX = _columns[parentData.initialColumn!-1].maxX;
+    }
+    for(int columnIndex = parentData.finalColumn! ; columnIndex<_columns.length; columnIndex++) {
+      ColumnData columnData = _columns[columnIndex];
+
+      columnData.minX=lastMaxX;
+      if(diff==null) {
+        double newMaxX = lastMaxX + parentData.size!.width;
+        diff = newMaxX - columnData.maxX;
+      }
+      if(diff>0) {
+        if(columnData.indices.isEmpty) {
+          diff=lastMaxX-columnData.maxX;
+          if(diff<=0) {
+            return;
+          }
+        }
+          columnData.maxX += diff;
+      }
+      lastMaxX=columnData.maxX;
+    }
+  }
+
+  void updateX2({required EasyGridParentData parentData}) {
+    double lastMaxX = 0;
+    double? diff;
+    if(parentData.initialColumn! > 0) {
+      lastMaxX = _columns[parentData.initialColumn!-1].maxX;
+    }
+    for(int columnIndex = parentData.initialColumn! ; columnIndex<_columns.length; columnIndex++) {
+      ColumnData columnData = _columns[columnIndex];
+
+      columnData.minX=lastMaxX;
+      if(diff==null) {
+        double newMaxX = lastMaxX + parentData.size!.width;
+        diff = newMaxX - columnData.maxX;
+      }
+      if(diff>0) {
+        columnData.maxX+=diff;
+      }
+      lastMaxX=columnData.maxX;
+    }
+  }
+
   void updateX({required int childIndex, required Size size}) {
     double lastMaxX = 0;
     double? diff;
@@ -90,9 +138,9 @@ class EasyGridLayout {
 
     ChildConfiguration configuration = parentData.configuration!;
 
-    for (int r = row; r < row + configuration.spanX; r++) {
+    for (int r = row; r < row + configuration.spanY; r++) {
       _row(r).parentsData.add(parentData);
-      for (int c = column; c < column + configuration.spanY; c++) {
+      for (int c = column; c < column + configuration.spanX; c++) {
         _column(c).parentsData.add(parentData);
         _column(c).indices.add(parentData.index!);
 
@@ -103,9 +151,9 @@ class EasyGridLayout {
     }
 
     parentData.initialRow = row;
-    parentData.finalRow = row + configuration.spanX - 1;
+    parentData.finalRow = row + configuration.spanY - 1;
     parentData.initialColumn = column;
-    parentData.finalColumn = column + configuration.spanY - 1;
+    parentData.finalColumn = column + configuration.spanX - 1;
   }
 
   RowData _row(int row) {
@@ -120,7 +168,7 @@ class EasyGridLayout {
   ColumnData _column(int column) {
     if (column >= _columns.length) {
       for (int i = _columns.length; i <= column; i++) {
-        _columns.add(ColumnData(column: GridColumn()));
+        _columns.add(ColumnData(index: _columns.length, column: GridColumn()));
       }
     }
     return _columns[column];
@@ -131,11 +179,10 @@ class EasyGridLayout {
   }
 
   double totalWidth() {
-    double total = 0;
-    _columns.forEach((element) {
-      total += element.maxWidth;
-    });
-    return total;
+    if(_columns.isNotEmpty) {
+      return _columns.last.maxX;
+    }
+    return 0;
   }
 
   double totalHeight() {
