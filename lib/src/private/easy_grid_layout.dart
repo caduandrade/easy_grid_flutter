@@ -63,6 +63,22 @@ class EasyGridLayout {
   final List<ColumnData> _columns = [];
   final List<EasyGridParentData> parentsData;
 
+  void updateX({required int childIndex, required Size size}) {
+    double lastMaxX = 0;
+    double? diff;
+    for(ColumnData columnData in _columns) {
+      columnData.minX=lastMaxX;
+      if(diff==null && columnData.indices.contains(childIndex)) {
+        double newMaxX = lastMaxX + size.width;
+        diff = newMaxX - columnData.maxX;
+      }
+      if(diff!=null && diff>0) {
+        columnData.maxX+=diff;
+      }
+      lastMaxX=columnData.maxX;
+    }
+  }
+
   void _addChild(
       {required EasyGridParentData parentData,
       required HashSet<_ChildAddress> addresses,
@@ -78,6 +94,8 @@ class EasyGridLayout {
       _row(r).parentsData.add(parentData);
       for (int c = column; c < column + configuration.spanY; c++) {
         _column(c).parentsData.add(parentData);
+        _column(c).indices.add(parentData.index!);
+
         if (addresses.add(_ChildAddress(row: r, column: c)) == false) {
           throw StateError('Collision in column $c and row $r');
         }
@@ -128,21 +146,19 @@ class EasyGridLayout {
     return total;
   }
 
-  double? columnX({required int column}) {
-    return _columns[column].x;
+  double? columnMaxX({required int column}) {
+    return _columns[column].maxX;
+  }
+
+  double? columnMinX({required int column}) {
+    return _columns[column].minX;
   }
 
   double? rowY({required int row}) {
     return _rows[row].y;
   }  
 
-  void updateColumnsX() {
-    double x = 0;
-    _columns.forEach((column) {
-      column.x = x;
-      x += column.maxWidth;
-    });
-  }
+
 
   void updateRowsY() {
     double y = 0;

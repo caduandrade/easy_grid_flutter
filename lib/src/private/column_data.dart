@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:easy_grid/src/easy_grid_parent_data.dart';
@@ -8,6 +9,7 @@ class ColumnData {
 
   final GridColumn column;
   final List<EasyGridParentData> parentsData = [];
+  final HashSet<int> indices =HashSet<int>();
 
   double  _maxWidth = 0;
   double get maxWidth => _maxWidth;
@@ -24,5 +26,6 @@ class ColumnData {
     _maxWidth+=v;
   }
 
-  double x = 0;
+  double minX = 0;
+  double maxX = 0;
 }

@@ -70,22 +70,20 @@ class EasyGridRenderBox extends RenderBox
 
      BoxConstraints constraints2 = BoxConstraints.loose(Size(constraints.maxWidth, constraints.maxHeight));
 
+
     for(int index = 0;index<children.length;index++){
       RenderBox child = children[index];
 
       double minh = child.getMinIntrinsicWidth(constraints.maxHeight);
-
       double maxh = child.getMaxIntrinsicWidth(constraints.maxHeight);
       print('$minh $maxh');
-      constraints2 = BoxConstraints(
-          minWidth: minh,
-          maxWidth: maxh,
-          maxHeight: this.constraints.maxHeight);
+      constraints2 = BoxConstraints(minWidth: minh,  maxWidth: maxh,      maxHeight: this.constraints.maxHeight);
 
       child.layout(constraints2, parentUsesSize: true);
       final EasyGridParentData parentData = child.easyGridParentData();
       parentData.size = child.size;
       ChildConfiguration configuration = parentData.configuration!;
+      layout.updateX(childIndex: index, size: child.size);
     }
 
 
@@ -123,9 +121,9 @@ class EasyGridRenderBox extends RenderBox
 
  */
 
-    layout.calculateMaxWidths();
-    layout.handleAvaiableWidth(maxWidth: _externalConstraints.maxWidth);
-    layout.updateColumnsX();
+    //layout.calculateMaxWidths();
+   // layout.handleAvaiableWidth(maxWidth: _externalConstraints.maxWidth);
+    //layout.updateColumnsX();
     layout.updateRowsY();
 
     for(int index = 0;index<children.length;index++) {
@@ -134,7 +132,7 @@ class EasyGridRenderBox extends RenderBox
       ChildConfiguration configuration = parentData.configuration!;
 
       //TODO handle spans
-      double x = layout.columnX(column: parentData.initialColumn!)!;
+      double x = layout.columnMinX(column: parentData.initialColumn!)!;
       double y = layout.rowY(row: parentData.initialRow!)!;
 
       parentData.offset = Offset(x, y);
@@ -153,7 +151,7 @@ class EasyGridRenderBox extends RenderBox
     } else {
       height = math.min(scrollConstraints.maxHeight, layout.totalHeight());
     }
-    size = Size(width, height);
+    size = Size(_externalConstraints.maxWidth, height);
     print('size: $size');
 
     DateTime e = DateTime.now();
