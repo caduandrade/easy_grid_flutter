@@ -63,32 +63,7 @@ class EasyGridLayout {
   final List<ColumnData> _columns = [];
   final List<EasyGridParentData> parentsData;
 
-  void updateX3({required EasyGridParentData parentData}) {
-    double lastMaxX = 0;
-    double? diff;
-    if(parentData.initialColumn! > 0) {
-      lastMaxX = _columns[parentData.initialColumn!-1].maxX;
-    }
-    for(int columnIndex = parentData.finalColumn! ; columnIndex<_columns.length; columnIndex++) {
-      ColumnData columnData = _columns[columnIndex];
 
-      columnData.minX=lastMaxX;
-      if(diff==null) {
-        double newMaxX = lastMaxX + parentData.size!.width;
-        diff = newMaxX - columnData.maxX;
-      }
-      if(diff>0) {
-        if(columnData.indices.isEmpty) {
-          diff=lastMaxX-columnData.maxX;
-          if(diff<=0) {
-            return;
-          }
-        }
-          columnData.maxX += diff;
-      }
-      lastMaxX=columnData.maxX;
-    }
-  }
 
   void updateX2({required EasyGridParentData parentData}) {
     double lastMaxX = 0;
@@ -111,21 +86,7 @@ class EasyGridLayout {
     }
   }
 
-  void updateX({required int childIndex, required Size size}) {
-    double lastMaxX = 0;
-    double? diff;
-    for(ColumnData columnData in _columns) {
-      columnData.minX=lastMaxX;
-      if(diff==null && columnData.indices.contains(childIndex)) {
-        double newMaxX = lastMaxX + size.width;
-        diff = newMaxX - columnData.maxX;
-      }
-      if(diff!=null && diff>0) {
-        columnData.maxX+=diff;
-      }
-      lastMaxX=columnData.maxX;
-    }
-  }
+
 
   void _addChild(
       {required EasyGridParentData parentData,
@@ -185,6 +146,13 @@ class EasyGridLayout {
     return 0;
   }
 
+  double get maxX {
+    if(_columns.isNotEmpty) {
+      return _columns.last.maxX;
+    }
+    return 0;
+  }
+
   double totalHeight() {
     double total = 0;
     _rows.forEach((element) {
@@ -224,31 +192,129 @@ class EasyGridLayout {
     return _rows[row].maxHeight;
   }
 
+  void updateX({required int childIndex, required Size size}) {
+    double lastMaxX = 0;
+    double? diff;
+    for(ColumnData columnData in _columns) {
+      columnData.minX=lastMaxX;
+      if(diff==null && columnData.indices.contains(childIndex)) {
+        double newMaxX = lastMaxX + size.width;
+        diff = newMaxX - columnData.maxX;
+      }
+      if(diff!=null && diff>0) {
+        columnData.maxX+=diff;
+      }
+      lastMaxX=columnData.maxX;
+    }
+  }
+
+  void updateX3({required EasyGridParentData parentData}) {
+    double lastMaxX = 0;
+    double? diff;
+    if(parentData.initialColumn! > 0) {
+      lastMaxX = _columns[parentData.initialColumn!-1].maxX;
+    }
+    for(int columnIndex = parentData.finalColumn! ; columnIndex<_columns.length; columnIndex++) {
+      ColumnData columnData = _columns[columnIndex];
+
+      columnData.minX=lastMaxX;
+      if(diff==null) {
+        double newMaxX = lastMaxX + parentData.size!.width;
+        diff = newMaxX - columnData.maxX;
+      }
+      if(diff>0) {
+        if(columnData.indices.isEmpty) {
+          diff=lastMaxX-columnData.maxX;
+          if(diff<=0) {
+            return;
+          }
+        }
+        columnData.maxX += diff;
+      }
+      lastMaxX=columnData.maxX;
+    }
+  }
+
+  void updateX4({required EasyGridParentData parentData}) {
+    double diff=0;
+    ColumnData initialColumnData = _columns[parentData.initialColumn!];
+    if(parentData.initialColumn!-1 >=0) {
+      initialColumnData.minX=_columns[parentData.initialColumn!-1].maxX;
+    } else {
+      initialColumnData.minX=0;
+    }
+
+    ColumnData finalColumnData = _columns[parentData.finalColumn!];
+    double newMaxX = initialColumnData.minX + parentData.size!.width;
+    diff = newMaxX - finalColumnData.maxX;
+
+    if(diff>0) {
+      finalColumnData.maxX+=diff;
+     // ColumnData lastColumnData= finalColumnData;
+      for(int columnIndex = parentData.finalColumn! +1 ; columnIndex<_columns.length; columnIndex++) {
+        ColumnData columnData = _columns[columnIndex];
+        columnData.minX += diff;
+        if(columnData.indices.isEmpty) {
+         // diff=lastColumnData.maxX-columnData.maxX;
+          diff=columnData.minX-columnData.maxX;
+          if(diff<=0) {
+            return;
+          }
+        }
+        columnData.maxX += diff;
+       // lastColumnData = columnData;
+      }
+    }
 
 
-  void handleAvaiableWidth({required double maxWidth}) {
+
+  }
+
+  void fillWidth({required double maxWidth}) {
     if (maxWidth == double.infinity) {
-      log('Cannot define growPriority with maxWidth infinity constrains',
+      log('Cannot define fillPriority with maxWidth infinity constrains',
           level: Level.WARNING.value);
       return;
     }
-    double tw = totalWidth();
-    if (tw<maxWidth) {
+    if (maxX<maxWidth) {
       double fills = 0;
       for (ColumnData columnData in _columns) {
         GridColumn column = columnData.column;
         if (column.fillPriority < 0) {
           throw StateError(
-              'Invalid growPriority value in column: ${column.fillPriority}');
+              'Invalid fillPriority value in column: ${column.fillPriority}');
         }
         fills += column.fillPriority;
       }
 
-      double  w = (maxWidth - tw) / fills;
-      for (ColumnData columnData in _columns) {
+      double  widthPerFill = (maxWidth - maxX) / fills;
+
+      for(int i =0;i<_columns.length;i++) {
+        ColumnData columnData = _columns[i];
         GridColumn column = columnData.column;
         if (column.fillPriority > 0) {
-          columnData.incMaxWidth(_convert(w*column.fillPriority));
+          double inc = _convert(widthPerFill*column.fillPriority);
+          columnData.maxX+=inc;
+          for(int j =i+1;j<_columns.length;j++) {
+            ColumnData nextColumnData = _columns[j];
+            print('inc $inc');
+            nextColumnData.minX+=inc;
+            //nextColumnData.maxX+=inc;
+
+            /*
+            nextColumnData.minX += inc;
+            if(nextColumnData.indices.isEmpty) {
+              // diff=lastColumnData.maxX-columnData.maxX;
+              inc=nextColumnData.minX-nextColumnData.maxX;
+              if(inc<=0) {
+                break;
+              }
+            }
+            nextColumnData.maxX += inc;
+            */
+
+
+          }
         }
       }
     }

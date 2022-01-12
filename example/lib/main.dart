@@ -38,10 +38,15 @@ class MyHomePage extends StatelessWidget {
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
     children.add(GridChild(child:  textField, wrap: true));
-    children.add(GridChild(child: textField2,spanX:2,wrap: true));
+
+    //children.add(GridChild(child: textField2,spanX:2,wrap: true));
+    children.add(GridChild(child: Text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),spanX:2,wrap: true));
+/*
     children.add(GridChild(child: Text('33333')));
     children.add(GridChild(child: Text('444444444444444444444')));
     children.add(GridChild(child: Text('55555')));
+*/
+
     //children.add(GridChild(child:  IntrinsicWidth(child:textField)));
     //children.add(GridChild(child: SizedBox(child: textField, width: 600), wrap: true));
     //children.add(EasyGridChild(child: textField, wrap: true));
@@ -50,7 +55,7 @@ class MyHomePage extends StatelessWidget {
     //return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children)));
     //return Scaffold(body:CustomScrollView(slivers: [SliverFillRemaining(hasScrollBody: false, child: EasyGrid(children: children))]));
 
-    return Scaffold(body: EasyGrid(children: children,columns: [GridColumn(fillPriority: 1)],));
+    return Scaffold(body: EasyGrid(children: children,columns: [GridColumn(fillPriority: 1),GridColumn(fillPriority: 0)],));
     //return Scaffold(body: SingleChildScrollView(child:IntrinsicWidth(child:EasyGrid(children: children))));
     //return Scaffold(body: IntrinsicWidth(child:EasyGrid(children: children)));
 

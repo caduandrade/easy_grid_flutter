@@ -71,6 +71,8 @@ class EasyGridRenderBox extends RenderBox
      BoxConstraints constraints2 = BoxConstraints.loose(Size(constraints.maxWidth, constraints.maxHeight));
 
 
+
+
     for(int index = 0;index<children.length;index++){
       RenderBox child = children[index];
 
@@ -84,9 +86,10 @@ class EasyGridRenderBox extends RenderBox
       parentData.size = child.size;
       ChildConfiguration configuration = parentData.configuration!;
       //layout.updateX(childIndex: index, size: child.size);
-      layout.updateX3(parentData: parentData);
+      layout.updateX4(parentData: parentData);
     }
 
+    layout.fillWidth(maxWidth: _externalConstraints.maxWidth);
 
 /*
     layout.iterate((row, column, child) {
@@ -124,6 +127,7 @@ class EasyGridRenderBox extends RenderBox
 
    // layout.handleAvaiableWidth(maxWidth: _externalConstraints.maxWidth);
     //layout.updateColumnsX();
+
     layout.updateRowsY();
 
     for(int index = 0;index<children.length;index++) {
