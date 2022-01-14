@@ -3,7 +3,6 @@ import 'package:easy_grid/src/easy_grid_render_box.dart';
 import 'package:easy_grid/src/grid_column.dart';
 import 'package:easy_grid/src/grid_row.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class EasyGrid extends StatelessWidget {

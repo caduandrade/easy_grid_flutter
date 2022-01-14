@@ -37,15 +37,15 @@ class MyHomePage extends StatelessWidget {
     );
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
-    children.add(GridChild(child:  textField, wrap: true));
+    children.add(GridChild(child:  textField));
+    children.add(GridChild(child: Text('2'), wrap: true));
 
     //children.add(GridChild(child: textField2,spanX:2,wrap: true));
-    children.add(GridChild(child: Text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),spanX:2,wrap: true));
-/*
+    children.add(GridChild(child: Text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),spanX:2));
     children.add(GridChild(child: Text('33333')));
-    children.add(GridChild(child: Text('444444444444444444444')));
-    children.add(GridChild(child: Text('55555')));
-*/
+    //children.add(GridChild(child: Text('444444444444444444444')));
+   // children.add(GridChild(child: Text('55555')));
+
 
     //children.add(GridChild(child:  IntrinsicWidth(child:textField)));
     //children.add(GridChild(child: SizedBox(child: textField, width: 600), wrap: true));

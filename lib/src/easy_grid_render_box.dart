@@ -71,14 +71,12 @@ class EasyGridRenderBox extends RenderBox
      BoxConstraints constraints2 = BoxConstraints.loose(Size(constraints.maxWidth, constraints.maxHeight));
 
 
-
-
     for(int index = 0;index<children.length;index++){
       RenderBox child = children[index];
 
       double minh = child.getMinIntrinsicWidth(constraints.maxHeight);
       double maxh = child.getMaxIntrinsicWidth(constraints.maxHeight);
-      print('$minh $maxh');
+
       constraints2 = BoxConstraints(minWidth: minh,  maxWidth: maxh,      maxHeight: this.constraints.maxHeight);
 
       child.layout(constraints2, parentUsesSize: true);

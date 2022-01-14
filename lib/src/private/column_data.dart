@@ -26,6 +26,20 @@ class ColumnData {
   void incMaxWidth(double v) {
     _maxWidth+=v;
   }
+  
+  double get availableInside {
+    double a=0;
+    for (EasyGridParentData parentData in parentsData) {
+      if(parentData.initialColumn==index && parentData.finalColumn==index) {
+        a+=parentData.size!.width;
+      }
+    }
+    return width - a;
+  }
+
+  double get width {
+    return maxX-minX;
+  }
 
   double minX = 0;
   double maxX = 0;

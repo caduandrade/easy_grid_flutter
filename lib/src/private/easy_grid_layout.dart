@@ -51,7 +51,7 @@ class EasyGridLayout {
           row++;
           column = 0;
         } else {
-          column++;
+          column+=configuration.spanX;
         }
       }
     }
@@ -276,44 +276,44 @@ class EasyGridLayout {
           level: Level.WARNING.value);
       return;
     }
-    if (maxX<maxWidth) {
-      double fills = 0;
-      for (ColumnData columnData in _columns) {
-        GridColumn column = columnData.column;
-        if (column.fillPriority < 0) {
-          throw StateError(
-              'Invalid fillPriority value in column: ${column.fillPriority}');
-        }
-        fills += column.fillPriority;
+
+    double fills = 0;
+    for (ColumnData columnData in _columns) {
+      GridColumn column = columnData.column;
+      if (column.fillPriority < 0) {
+        throw StateError(
+            'Invalid fillPriority value in column: ${column.fillPriority}');
       }
+      fills += column.fillPriority;
+    }
 
-      double  widthPerFill = (maxWidth - maxX) / fills;
-
+    if(fills>0) {
       for(int i =0;i<_columns.length;i++) {
-        ColumnData columnData = _columns[i];
-        GridColumn column = columnData.column;
-        if (column.fillPriority > 0) {
-          double inc = _convert(widthPerFill*column.fillPriority);
-          columnData.maxX+=inc;
-          for(int j =i+1;j<_columns.length;j++) {
-            ColumnData nextColumnData = _columns[j];
-            print('inc $inc');
-            nextColumnData.minX+=inc;
-            //nextColumnData.maxX+=inc;
+        final ColumnData columnData = _columns[i];
+        final GridColumn column = columnData.column;
+        if(column.fillPriority>0){
+        double availableExtra = (maxWidth - maxX)  *     (column.fillPriority / fills);
 
-            /*
-            nextColumnData.minX += inc;
-            if(nextColumnData.indices.isEmpty) {
-              // diff=lastColumnData.maxX-columnData.maxX;
-              inc=nextColumnData.minX-nextColumnData.maxX;
-              if(inc<=0) {
-                break;
+          if (i == _columns.length - 1) {
+            columnData.maxX += availableExtra;
+            print('precisa?');
+          } else {
+            ColumnData lastColumnData =columnData;
+            for (int j = i + 1; j < _columns.length; j++) {
+              ColumnData nextColumnData = _columns[j];
+              double availableInside = nextColumnData.availableInside;
+              if(availableInside>0) {
+                lastColumnData.maxX += availableInside;
+                nextColumnData.minX += availableInside;
               }
+
+              if (availableExtra > 0) {
+                lastColumnData.maxX += availableExtra;
+                nextColumnData.minX += availableExtra;
+                nextColumnData.maxX += availableExtra;
+              }
+              lastColumnData = nextColumnData;
             }
-            nextColumnData.maxX += inc;
-            */
-
-
           }
         }
       }
