@@ -10,6 +10,7 @@ class EasyGridParentData extends ContainerBoxParentData<RenderBox> {
   int? finalColumn;
   int? index;
   Size? size;
+  BoxConstraints? constraints;
 
   void clear() {
     initialRow = null;
@@ -18,5 +19,6 @@ class EasyGridParentData extends ContainerBoxParentData<RenderBox> {
     finalColumn = null;
     index=null;
     size=null;
+    constraints=null;
   }
 }

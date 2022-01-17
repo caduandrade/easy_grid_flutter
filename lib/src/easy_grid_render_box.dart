@@ -10,19 +10,24 @@ import 'package:flutter/rendering.dart';
 class EasyGridRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, EasyGridParentData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, EasyGridParentData> {
-  EasyGridRenderBox({required List<GridColumn>? columns,required List<GridRow>? rows,required BoxConstraints externalConstraints})
+        RenderBoxContainerDefaultsMixin<RenderBox, EasyGridParentData>,EasyGridLayoutDelegate {
+  EasyGridRenderBox(
+      {required List<GridColumn>? columns,
+      required List<GridRow>? rows,
+      required BoxConstraints externalConstraints})
       : this._columns = columns,
         this._rows = rows,
-  this._externalConstraints=externalConstraints;
+        this._externalConstraints = externalConstraints;
 
   BoxConstraints _externalConstraints;
-  set externalConstraints(BoxConstraints externalConstraints){
-    if(_externalConstraints!=externalConstraints){
-      _externalConstraints=externalConstraints;
+  set externalConstraints(BoxConstraints externalConstraints) {
+    if (_externalConstraints != externalConstraints) {
+      _externalConstraints = externalConstraints;
       markNeedsLayout();
     }
   }
+
+  List<RenderBox> _children = [];
 
   List<GridColumn>? _columns;
   set columns(List<GridColumn>? columns) {
@@ -47,13 +52,33 @@ class EasyGridRenderBox extends RenderBox
   }
 
   @override
+  double getChildMinIntrinsicWidth(int index, double maxHeight) {
+    RenderBox child = _children[index];
+    return child.getMinIntrinsicWidth(constraints.maxHeight);
+  }
+
+  @override
+  double getChildMaxIntrinsicWidth(int index, double maxHeight) {
+    RenderBox child = _children[index];
+    return child.getMaxIntrinsicWidth(constraints.maxHeight);
+  }
+
+  @override
+  Size setChildInitialSize(int index, BoxConstraints constraints) {
+    RenderBox child = _children[index];
+    child.layout(constraints, parentUsesSize: true);
+    return child.size;
+  }
+
+  @override
   void performLayout() {
     DateTime start = DateTime.now();
 
     final BoxConstraints scrollConstraints = this.constraints;
 
     List<EasyGridParentData> parentsData = [];
-    List<RenderBox> children =[];
+
+    _children.clear();
     RenderBox? child = firstChild;
     while (child != null) {
       final EasyGridParentData parentData = child.easyGridParentData();
@@ -61,75 +86,21 @@ class EasyGridRenderBox extends RenderBox
         throw StateError('Null constraints');
       }
       parentsData.add(parentData);
-      children.add(child);
+      _children.add(child);
       child = parentData.nextSibling;
     }
 
-    EasyGridLayout layout =
-    EasyGridLayout(parentsData: parentsData, columns: _columns, rows: _rows);
+    EasyGridLayout layout = EasyGridLayout(delegate: this,
+        parentsData: parentsData, columns: _columns, rows: _rows);
 
-     BoxConstraints constraints2 = BoxConstraints.loose(Size(constraints.maxWidth, constraints.maxHeight));
-
-
-    for(int index = 0;index<children.length;index++){
-      RenderBox child = children[index];
-
-      double minh = child.getMinIntrinsicWidth(constraints.maxHeight);
-      double maxh = child.getMaxIntrinsicWidth(constraints.maxHeight);
-
-      constraints2 = BoxConstraints(minWidth: minh,  maxWidth: maxh,      maxHeight: this.constraints.maxHeight);
-
-      child.layout(constraints2, parentUsesSize: true);
-      final EasyGridParentData parentData = child.easyGridParentData();
-      parentData.size = child.size;
-      ChildConfiguration configuration = parentData.configuration!;
-      //layout.updateX(childIndex: index, size: child.size);
-      layout.updateX4(parentData: parentData);
-    }
+    layout.initialLayout(constraints);
 
     layout.fillWidth(maxWidth: _externalConstraints.maxWidth);
 
-/*
-    layout.iterate((row, column, child) {
-      // verificar o peso de cada coluna
-      // calcular primeiro size de cada um dado max w = max w do cosntraint
-
-      // distribuir width entre colunas com grow e pesos  (grow e peso 0?) - como descobrir max w de peso 0?
-      //
-
-      final EasyGridParentData parentData = child.easyGridParentData();
-      ChildConfiguration configuration = parentData.configuration!;
-      //if (parentData.hasSize == false) {
-      // BoxConstraints c = BoxConstraints.loose(Size.infinite);
-      //  c= BoxConstraints.loose(Size(500,500));
-      BoxConstraints constraints2 = constraints;
-      if (column == 991) {
-        double minh = child.getMinIntrinsicWidth(constraints.maxHeight);
-        double maxh = child.getMaxIntrinsicWidth(constraints.maxHeight);
-        constraints2 = BoxConstraints(
-            minWidth: minh,
-            maxWidth: maxh,
-            maxHeight: this.constraints.maxHeight);
-      }
-
-      child.layout(constraints2, parentUsesSize: true);
-      //  child.layout(c, parentUsesSize: true);
-      parentData.hasSize = true;
-      //  }
-      //TODO handle spans
-      layout.updateMaxWidth(column: column, width: child.size.width);
-      layout.updateMaxHeight(row: row, height: child.size.height);
-    });
-
- */
-
-   // layout.handleAvaiableWidth(maxWidth: _externalConstraints.maxWidth);
-    //layout.updateColumnsX();
-
     layout.updateRowsY();
 
-    for(int index = 0;index<children.length;index++) {
-      RenderBox child = children[index];
+    for (int index = 0; index < _children.length; index++) {
+      RenderBox child = _children[index];
       final EasyGridParentData parentData = child.easyGridParentData();
       ChildConfiguration configuration = parentData.configuration!;
 

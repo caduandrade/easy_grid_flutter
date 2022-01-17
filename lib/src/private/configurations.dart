@@ -1,22 +1,22 @@
 import 'package:flutter/widgets.dart';
 
 class ChildConfiguration {
-  ChildConfiguration(
-      {this.row,
-      this.column,
-      required this.spanX,
-      required this.spanY,
-      required this.wrap,
-      required this.growX,
-      required this.growY,
-      required this.skip,
-      required this.alignment,
-      required this.minWidth,
-      required this.maxWidth,
-      this.width,
-      required this.minHeight,
-      required this.maxHeight,
-      this.height}) {
+  ChildConfiguration({this.row,
+    this.column,
+    required this.spanX,
+    required this.spanY,
+    required this.wrap,
+    required this.growX,
+    required this.growY,
+    required this.skip,
+    required this.alignment,
+    required this.minWidth,
+    required this.prefWidth,
+    required this.maxWidth,
+    this.width,
+    required this.minHeight,
+    required this.maxHeight,
+    this.height}) {
     if (this.row != null && this.column == null) {
       throw ArgumentError('When the row is defined, the column must also be.');
     }
@@ -76,6 +76,7 @@ class ChildConfiguration {
   final int skip;
   final Alignment alignment;
   final double minWidth;
+  final double? prefWidth;
   final double maxWidth;
   final double? width;
   final double minHeight;
@@ -97,6 +98,7 @@ class ChildConfiguration {
           skip == other.skip &&
           alignment == other.alignment &&
           minWidth == other.minWidth &&
+          prefWidth == other.prefWidth &&
           maxWidth == other.maxWidth &&
           width == other.width &&
           minHeight == other.minHeight &&
@@ -115,6 +117,7 @@ class ChildConfiguration {
       skip.hashCode ^
       alignment.hashCode ^
       minWidth.hashCode ^
+      prefWidth.hashCode ^
       maxWidth.hashCode ^
       width.hashCode ^
       minHeight.hashCode ^

@@ -22,27 +22,18 @@ class EasyGridExampleApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    TextField textField = TextField(
 
-      decoration: InputDecoration(
-          isDense: true,
-          border: OutlineInputBorder()
-      ),
-    );
-    TextField textField2 = TextField(
-      decoration: InputDecoration(
-          isDense: true,
-          border: OutlineInputBorder()
-      ),
-    );
     List<GridChild> children = [];
     children.add(GridChild(child: Text('111111111')));
-    children.add(GridChild(child:  textField));
-    children.add(GridChild(child: Text('2'), wrap: true));
+    children.add(GridChild(child: Container(color: Colors.red, width: 50, height: 50), prefWidth: 100));
+    //children.add(GridChild(child:  _textField(), prefWidth: 100));
+    children.add(GridChild(child: Text('2222222')));
+    children.add(GridChild(child:  _textField(),wrap: true));
 
     //children.add(GridChild(child: textField2,spanX:2,wrap: true));
-    children.add(GridChild(child: Text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),spanX:2));
+    //children.add(GridChild(child: Text('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),spanX:2));
     children.add(GridChild(child: Text('33333')));
+    children.add(GridChild(child:  _textField(),spanX: 3, growX: true));
     //children.add(GridChild(child: Text('444444444444444444444')));
    // children.add(GridChild(child: Text('55555')));
 
@@ -55,9 +46,32 @@ class MyHomePage extends StatelessWidget {
     //return Scaffold(body: SingleChildScrollView(child:EasyGrid(children: children)));
     //return Scaffold(body:CustomScrollView(slivers: [SliverFillRemaining(hasScrollBody: false, child: EasyGrid(children: children))]));
 
-    return Scaffold(body: EasyGrid(children: children,columns: [GridColumn(fillPriority: 1),GridColumn(fillPriority: 0)],));
+    //TODO columns list to map
+    return Scaffold(body: EasyGrid(children: children,columns: [GridColumn(fill: 0),GridColumn(fill: 0)],));
     //return Scaffold(body: SingleChildScrollView(child:IntrinsicWidth(child:EasyGrid(children: children))));
     //return Scaffold(body: IntrinsicWidth(child:EasyGrid(children: children)));
 
   }
+
+  TextField _textField() {
+    return TextField(
+        decoration: InputDecoration(
+            isDense: true,
+            border: OutlineInputBorder()
+        )
+    );
+  }
+}
+
+class BoxTest extends StatelessWidget{
+
+  const BoxTest({Key? key, required this.color}) : super(key: key);
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+  return Container(color: color, child: SizedBox(width:16,height: 16));
+  }
+
 }

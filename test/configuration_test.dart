@@ -2,10 +2,15 @@ import 'package:easy_grid/src/axis_alignment.dart';
 import 'package:easy_grid/src/private/configurations.dart';
 import 'package:easy_grid/src/private/column_data.dart';
 import 'package:easy_grid/src/private/row_data.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  /// ------
+  /// []|[]|[]|
+  /// -----
+  ///
   group('ChildConfiguration', () {
     test('OK', () {
       ChildConfiguration config = ChildConfiguration(
@@ -17,6 +22,7 @@ void main() {
           wrap: false,
           alignment: Alignment.center,
           minWidth: 0,
+          prefWidth: null,
           maxWidth: double.infinity,
           minHeight: 1,
           maxHeight: 100);
@@ -30,6 +36,7 @@ void main() {
       expect(config.wrap, false);
       expect(config.alignment, Alignment.center);
       expect(config.minWidth, 0);
+      expect(config.prefWidth, null);
       expect(config.maxWidth, double.infinity);
       expect(config.width, null);
       expect(config.minHeight, 1);
@@ -46,6 +53,7 @@ void main() {
           wrap: false,
           alignment: Alignment.center,
           minWidth: 0,
+          prefWidth: null,
           maxWidth: double.infinity,
           width: 50,
           minHeight: 0,
@@ -66,6 +74,7 @@ void main() {
           wrap: false,
           alignment: Alignment.center,
           minWidth: 0,
+          prefWidth: null,
           maxWidth: double.infinity,
           minHeight: 0,
           maxHeight: double.infinity);
@@ -85,6 +94,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -103,6 +113,7 @@ void main() {
               wrap: true,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -120,6 +131,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -137,6 +149,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -154,6 +167,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -171,6 +185,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -187,6 +202,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -203,6 +219,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -219,6 +236,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -237,6 +255,7 @@ void main() {
               minWidth: double.negativeInfinity,
               maxWidth: double.infinity,
               minHeight: 0,
+              prefWidth: null,
               maxHeight: double.infinity),
           throwsA(isA<ArgumentError>()));
     });
@@ -253,6 +272,7 @@ void main() {
               minWidth: double.infinity,
               maxWidth: double.infinity,
               minHeight: 0,
+              prefWidth: null,
               maxHeight: double.infinity),
           throwsA(isA<ArgumentError>()));
     });
@@ -267,6 +287,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 10,
+              prefWidth: null,
               maxWidth: 2,
               minHeight: 0,
               maxHeight: double.infinity),
@@ -283,6 +304,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: double.negativeInfinity,
               maxHeight: double.infinity),
@@ -299,6 +321,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: double.infinity,
               maxHeight: double.infinity),
@@ -315,6 +338,7 @@ void main() {
               wrap: false,
               alignment: Alignment.center,
               minWidth: 0,
+              prefWidth: null,
               maxWidth: double.infinity,
               minHeight: 20,
               maxHeight: 10),
