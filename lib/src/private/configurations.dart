@@ -10,13 +10,10 @@ class ChildConfiguration {
      this.growY=false,
      this.skip=0,
      this.alignment=Alignment.center,
-    required this.minWidth,
-    required this.prefWidth,
-    required this.maxWidth,
-    this.width,
-    required this.minHeight,
-    required this.maxHeight,
-    this.height}) {
+     this.minWidth=0,
+     this.prefWidth,
+     this.minHeight=0,
+    this.prefHeight}) {
     if (this.row != null && this.column == null) {
       throw ArgumentError('When the row is defined, the column must also be.');
     }
@@ -52,17 +49,11 @@ class ChildConfiguration {
     if (this.minWidth == double.infinity) {
       throw ArgumentError('minWidth can not be infinity.');
     }
-    if (this.maxWidth != double.infinity && this.minWidth > this.maxWidth) {
-      throw ArgumentError('maxWidth must be bigger than minWidth.');
-    }
     if (this.minHeight == double.negativeInfinity) {
       throw ArgumentError('minHeight can not be negativeInfinity.');
     }
     if (this.minHeight == double.infinity) {
       throw ArgumentError('minHeight can not be infinity.');
-    }
-    if (this.maxHeight != double.infinity && this.minHeight > this.maxHeight) {
-      throw ArgumentError('maxHeight must be bigger than minHeight.');
     }
   }
 
@@ -77,11 +68,8 @@ class ChildConfiguration {
   final Alignment alignment;
   final double minWidth;
   final double? prefWidth;
-  final double maxWidth;
-  final double? width;
   final double minHeight;
-  final double maxHeight;
-  final double? height;
+  final double? prefHeight;
 
   @override
   bool operator ==(Object other) =>
@@ -99,11 +87,8 @@ class ChildConfiguration {
           alignment == other.alignment &&
           minWidth == other.minWidth &&
           prefWidth == other.prefWidth &&
-          maxWidth == other.maxWidth &&
-          width == other.width &&
           minHeight == other.minHeight &&
-          maxHeight == other.maxHeight &&
-          height == other.height;
+          prefHeight == other.prefHeight;
 
   @override
   int get hashCode =>
@@ -118,9 +103,6 @@ class ChildConfiguration {
       alignment.hashCode ^
       minWidth.hashCode ^
       prefWidth.hashCode ^
-      maxWidth.hashCode ^
-      width.hashCode ^
       minHeight.hashCode ^
-      maxHeight.hashCode ^
-      height.hashCode;
+      prefHeight.hashCode;
 }

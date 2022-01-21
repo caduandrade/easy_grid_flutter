@@ -161,7 +161,6 @@ class EasyGridLayout {
   Size finalSize(BoxConstraints scrollConstraints){
     double width = totalWidth();
     if (scrollConstraints.hasInfiniteWidth==false) {
-      print('xx $width $scrollConstraints');
       width = math.max(width, scrollConstraints.minWidth);
       width = math.min(width, scrollConstraints.maxWidth);
     }
@@ -325,8 +324,8 @@ class EasyGridLayout {
   }
 
   double _convert(double value) {
-    double newValue = value.roundToDouble();
-    return newValue;
+    //return value.roundToDouble();
+    return value;
   }
 }
 

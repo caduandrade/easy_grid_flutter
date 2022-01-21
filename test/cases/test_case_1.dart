@@ -8,12 +8,7 @@ import 'test_case.dart';
 class TestCase1 extends TestCase {
   TestCase1()
       : super(configurations: [
-          ChildConfiguration(
-              minWidth: 0,
-              prefWidth: null,
-              maxWidth: double.infinity,
-              minHeight: 0,
-              maxHeight: double.infinity)
+          ChildConfiguration()
         ]);
 
   @override

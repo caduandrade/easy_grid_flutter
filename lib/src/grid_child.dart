@@ -17,10 +17,7 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       Alignment alignment = Alignment.center,
       double minWidth = 0,
         double? prefWidth,
-      double maxWidth = double.infinity,
-      double? width,
       double minHeight = 0,
-      double maxHeight = double.infinity,
       double? height}) {
     return GridChild._(
         child: child,
@@ -36,11 +33,8 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
             alignment: alignment,
             minWidth: minWidth,
             prefWidth: prefWidth,
-            maxWidth: maxWidth,
             minHeight: minHeight,
-            maxHeight: maxHeight,
-            width: width,
-            height: height));
+            prefHeight: height));
   }
 
   factory GridChild(
@@ -54,10 +48,7 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
       Alignment alignment = Alignment.center,
       double minWidth = 0,
         double? prefWidth,
-      double maxWidth = double.infinity,
-      double? width,
       double minHeight = 0,
-      double maxHeight = double.infinity,
       double? height}) {
     return GridChild._(
         child: child,
@@ -71,11 +62,8 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
             alignment: alignment,
             minWidth: minWidth,
             prefWidth: prefWidth,
-            maxWidth: maxWidth,
             minHeight: minHeight,
-            maxHeight: maxHeight,
-            width: width,
-            height: height));
+            prefHeight: height));
   }
 
   GridChild._({
@@ -123,14 +111,8 @@ class GridChild extends ParentDataWidget<EasyGridParentData> {
     properties.add(DiagnosticsProperty<Object>(
         'configuration.minWidth', configuration.minWidth));
     properties.add(DiagnosticsProperty<Object>(
-        'configuration.maxWidth', configuration.maxWidth));
-    properties.add(DiagnosticsProperty<Object>(
-        'configuration.width', configuration.width));
-    properties.add(DiagnosticsProperty<Object>(
         'configuration.minHeight', configuration.minHeight));
     properties.add(DiagnosticsProperty<Object>(
-        'configuration.maxHeight', configuration.maxHeight));
-    properties.add(DiagnosticsProperty<Object>(
-        'configuration.height', configuration.height));
+        'configuration.height', configuration.prefHeight));
   }
 }
