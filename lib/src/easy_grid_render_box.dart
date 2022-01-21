@@ -64,7 +64,7 @@ class EasyGridRenderBox extends RenderBox
   }
 
   @override
-  Size setChildInitialSize(int index, BoxConstraints constraints) {
+  Size layoutChild(int index, BoxConstraints constraints) {
     RenderBox child = _children[index];
     child.layout(constraints, parentUsesSize: true);
     return child.size;
@@ -73,8 +73,6 @@ class EasyGridRenderBox extends RenderBox
   @override
   void performLayout() {
     DateTime start = DateTime.now();
-
-    final BoxConstraints scrollConstraints = this.constraints;
 
     List<EasyGridParentData> parentsData = [];
 
@@ -90,41 +88,14 @@ class EasyGridRenderBox extends RenderBox
       child = parentData.nextSibling;
     }
 
+
+    //print('ex $_externalConstraints  c $constraints');
+
     EasyGridLayout layout = EasyGridLayout(delegate: this,
         parentsData: parentsData, columns: _columns, rows: _rows);
 
-    layout.initialLayout(constraints);
 
-    layout.fillWidth(maxWidth: _externalConstraints.maxWidth);
-
-    layout.updateRowsY();
-
-    for (int index = 0; index < _children.length; index++) {
-      RenderBox child = _children[index];
-      final EasyGridParentData parentData = child.easyGridParentData();
-      ChildConfiguration configuration = parentData.configuration!;
-
-      //TODO handle spans
-      double x = layout.columnMinX(column: parentData.initialColumn!)!;
-      double y = layout.rowY(row: parentData.initialRow!)!;
-
-      parentData.offset = Offset(x, y);
-    }
-
-    // updating the size...
-    double width = 0;
-    if (scrollConstraints.hasInfiniteWidth) {
-      width = layout.totalWidth();
-    } else {
-      width = math.min(scrollConstraints.maxWidth, layout.totalWidth());
-    }
-    double height = 0;
-    if (scrollConstraints.hasInfiniteHeight) {
-      height = layout.totalHeight();
-    } else {
-      height = math.min(scrollConstraints.maxHeight, layout.totalHeight());
-    }
-    size = Size(width, height);
+    size = layout.perform(_externalConstraints);
     print('size: $size');
 
     DateTime e = DateTime.now();

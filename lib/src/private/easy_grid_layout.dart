@@ -13,7 +13,7 @@ import 'package:flutter/widgets.dart';
 mixin EasyGridLayoutDelegate {
   double getChildMinIntrinsicWidth(int index,double maxHeight);
   double getChildMaxIntrinsicWidth(int index,double maxHeight);
-  Size setChildInitialSize(int index,BoxConstraints constraints);
+  Size layoutChild(int index,BoxConstraints constraints);
   
 } 
 
@@ -150,6 +150,22 @@ class EasyGridLayout {
     return total;
   }
 
+  Size finalSize(BoxConstraints scrollConstraints){
+    double width = totalWidth();
+    if (scrollConstraints.hasInfiniteWidth==false) {
+      print('xx $width $scrollConstraints');
+      width = math.max(width, scrollConstraints.minWidth);
+      width = math.min(width, scrollConstraints.maxWidth);
+    }
+    double height = 0;
+    if (scrollConstraints.hasInfiniteHeight) {
+      height = totalHeight();
+    } else {
+      height = math.min(scrollConstraints.maxHeight, totalHeight());
+    }
+    return Size(width, height);
+  }
+
   double? columnMaxX({required int column}) {
     return _columns[column].maxX;
   }
@@ -158,11 +174,17 @@ class EasyGridLayout {
     return _columns[column].minX;
   }
 
+  Offset childOffset(EasyGridParentData parentData){
+    double x = columnMinX(column: parentData.initialColumn!)!;
+    double y = rowY(row: parentData.initialRow!)!;
+    return Offset(x, y);
+  }
+
   double? rowY({required int row}) {
     return _rows[row].y;
   }
 
-  void updateRowsY() {
+  void _updateRowsY() {
     double y = 0;
     _rows.forEach((row) {
       row.y = y;
@@ -178,7 +200,8 @@ class EasyGridLayout {
     return _rows[row].maxHeight;
   }
 
-  void initialLayout(BoxConstraints constraints){
+  Size perform(BoxConstraints constraints){
+    print('layout perform $constraints');
     for (int index = 0; index < parentsData.length; index++) {
 
       double minIntrinsicWidth = _delegate.getChildMinIntrinsicWidth(index, constraints.maxHeight);
@@ -188,9 +211,18 @@ class EasyGridLayout {
 
       BoxConstraints childConstraints = _initialBoxConstraints(parentData, minIntrinsicWidth, maxIntrinsicWidth,  constraints.maxHeight);
 
-      parentData.size =_delegate.setChildInitialSize(index, childConstraints);
+      parentData.size =_delegate.layoutChild(index, childConstraints);
       _updateColumnsX(parentData: parentData);
     }
+    _fillWidth(maxWidth: constraints.maxWidth);
+    _updateRowsY();
+
+    for (int index = 0; index < parentsData.length; index++) {
+      final EasyGridParentData parentData = parentsData[index];
+      parentData.offset = childOffset(parentData);
+    }
+
+    return finalSize(constraints);
   }
 
   void _updateColumnsX({required EasyGridParentData parentData}) {
@@ -223,7 +255,7 @@ class EasyGridLayout {
     }
   }
 
-  void fillWidth({required double maxWidth}) {
+  void _fillWidth({required double maxWidth}) {
     if (maxWidth == double.infinity) {
       log('Cannot define fillPriority with maxWidth infinity constrains',
           level: Level.WARNING.value);
