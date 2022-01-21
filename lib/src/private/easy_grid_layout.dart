@@ -77,6 +77,14 @@ class EasyGridLayout {
   final List<ColumnData> _columns = [];
   final List<EasyGridParentData> parentsData;
 
+  Size getChildSize(int index) {
+    return parentsData[index].size!;
+  }
+
+  Offset getChildOffset(int index) {
+    return parentsData[index].offset;
+  }
+
   void _addChild(
       {required EasyGridParentData parentData,
       required HashSet<_ChildAddress> addresses,
@@ -257,7 +265,7 @@ class EasyGridLayout {
 
   void _fillWidth({required double maxWidth}) {
     if (maxWidth == double.infinity) {
-      log('Cannot define fillPriority with maxWidth infinity constrains',
+      log('Cannot define fill with maxWidth infinity constrains',
           level: Level.WARNING.value);
       return;
     }
@@ -267,7 +275,7 @@ class EasyGridLayout {
       GridColumn column = columnData.column;
       if (column.fill < 0) {
         throw StateError(
-            'Invalid fillPriority value in column: ${column.fill}');
+            'Invalid fill value in column: ${column.fill}');
       }
       fills += column.fill;
     }

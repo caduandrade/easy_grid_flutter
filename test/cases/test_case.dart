@@ -11,65 +11,59 @@ void expectSize({required double expectedWidth,required double expectedHeight,re
   expect(actualSize.height, expectedHeight,reason: 'Height');
 }
 
+void expectOffset({required double expectedX,required double expectedY,required Offset actualOffset}) {
+  expect(actualOffset.dx, expectedX, reason: 'X');
+  expect(actualOffset.dy, expectedY,reason: 'Y');
+}
+
 abstract class TestCase  {
 
-  late List<EasyGridParentData> parentsData;
-  late List<GridColumn>? columns;
-  late List<GridRow>? rows;
+  final List<ChildConfiguration> configurations;
+  final List<GridColumn>? columns;
+  final List<GridRow>? rows;
 
-  List<GridColumn>? buildColumns();
-  List<GridRow>? buildRows();
-  List<ChildConfiguration> buildChildConfigurations();
+  TestCase({required this.configurations, this.columns, this.rows});
 
 
   double getChildMaxIntrinsicWidth(int childIndex, ChildConfiguration configuration, double maxHeight);
   double getChildMinIntrinsicWidth(int childIndex, ChildConfiguration configuration, double maxHeight);
   Size layoutChild(ChildConfiguration configuration, BoxConstraints constraints);
 
-  Size getChildSize(int index) {
-    return parentsData[index].size!;
-  }
-
-  Offset getChildOffset(int index) {
-    return parentsData[index].offset;
-  }
 
   EasyGridLayout buildLayout(){
-    parentsData = [];
-    for(ChildConfiguration configuration in buildChildConfigurations()){
+    List<EasyGridParentData> parentsData = [];
+    for(ChildConfiguration configuration in configurations){
       EasyGridParentData parentData = EasyGridParentData();
       parentData.configuration=configuration;
       parentsData.add(parentData);
     }
-    columns = buildColumns();
-    rows= buildRows();
-    return EasyGridLayout(delegate: _LayoutDelegate(this), parentsData: parentsData, columns: columns, rows: rows);
+    return EasyGridLayout(delegate: _LayoutDelegate(this,parentsData), parentsData: parentsData, columns: columns, rows: rows);
   }
 
 }
 
 class _LayoutDelegate with EasyGridLayoutDelegate {
 
-  _LayoutDelegate(this.testCase);
+  _LayoutDelegate(this.testCase, this.parentsData);
 
 final TestCase testCase;
-
+final List<EasyGridParentData> parentsData;
 
   @override
   double getChildMaxIntrinsicWidth(int index, double maxHeight) {
-    EasyGridParentData parentData = testCase.parentsData[index];
+    EasyGridParentData parentData = parentsData[index];
     return testCase.getChildMaxIntrinsicWidth(index, parentData.configuration!, maxHeight);
   }
 
   @override
   double getChildMinIntrinsicWidth(int index, double maxHeight) {
-    EasyGridParentData parentData = testCase.parentsData[index];
+    EasyGridParentData parentData = parentsData[index];
     return testCase.getChildMinIntrinsicWidth(index, parentData.configuration!, maxHeight);
   }
 
   @override
   Size layoutChild(int index, BoxConstraints constraints) {
-    EasyGridParentData parentData = testCase.parentsData[index];
+    EasyGridParentData parentData = parentsData[index];
     return testCase.layoutChild(parentData.configuration!,constraints);
   }
 
